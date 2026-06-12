@@ -1,458 +1,525 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaristaVerse | کافه مجازی و هوشمند</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #120e0c; color: #f3e8e0; font-family: Tahoma, Arial, sans-serif; }
-        .glass-panel { background: rgba(30, 22, 18, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* استایل اسکرول‌بار اختصاصی */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1a1614; }
-        ::-webkit-scrollbar-thumb { background: #5a4634; border-radius: 4px; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffeeCraft — بساز، بنوش، بچرخ</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0E0A05;
+  --bg2: #1A1008;
+  --bg3: #251810;
+  --cream: #F5EDD6;
+  --cream2: #E8D9B8;
+  --gold: #C8983A;
+  --amber: #E8651A;
+  --muted: #7A6040;
+  --white: #FFFFFF;
+  --green: #4CAF7A;
+  --red: #E84040;
+}
 
-    <nav class="glass-panel sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-lg">
-        <h1 class="text-2xl font-bold text-yellow-500"><i class="fa-solid fa-mug-hot mr-2"></i> BaristaVerse</h1>
-        <div class="flex gap-4">
-            <button onclick="switchTab('menu')" class="nav-btn text-gray-300 hover:text-white font-bold transition px-3 py-2 rounded border-b-2 border-transparent hover:border-yellow-500"><i class="fa-solid fa-book-open"></i> منوی کافه</button>
-            <button onclick="switchTab('builder')" class="nav-btn text-gray-300 hover:text-white font-bold transition px-3 py-2 rounded border-b-2 border-transparent hover:border-yellow-500"><i class="fa-solid fa-flask"></i> آزمایشگاه</button>
-            <button onclick="switchTab('social')" class="nav-btn text-gray-300 hover:text-white font-bold transition px-3 py-2 rounded border-b-2 border-transparent hover:border-yellow-500"><i class="fa-solid fa-users"></i> جامعه و لول</button>
-        </div>
-        <div class="flex items-center gap-3 bg-[#2a231f] px-3 py-1 rounded-full border border-gray-700">
-            <i class="fa-solid fa-cloud-rain text-blue-400 cursor-pointer" title="صدای باران"></i>
-            <i class="fa-solid fa-music text-purple-400 cursor-pointer" title="موسیقی جاز"></i>
-            <i class="fa-solid fa-users-viewfinder text-gray-400 cursor-pointer" title="صدای همهمه کافه"></i>
-        </div>
-    </nav>
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <main class="flex-grow p-6 max-w-7xl mx-auto w-full">
+html { scroll-behavior: smooth; }
 
-        <section id="menu" class="tab-content active glass-panel p-8 rounded-3xl">
-            <h2 class="text-3xl font-bold mb-6 text-center border-b border-gray-700 pb-4">کتابخانه نوشیدنی‌ها و غذاها</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6" id="menu-container">
-                </div>
-        </section>
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--bg);
+  color: var(--cream);
+  overflow-x: hidden;
+}
 
-        <section id="builder" class="tab-content">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <div class="glass-panel p-6 rounded-3xl md:col-span-2">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-yellow-500"><i class="fa-solid fa-blender text-white ml-2"></i>شخصی‌سازی نوشیدنی</h2>
-                        <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition shadow-[0_0_15px_rgba(147,51,234,0.5)]">
-                            <i class="fa-solid fa-robot ml-1"></i> AI Barista
-                        </button>
-                    </div>
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
 
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-[#2a231f] p-4 rounded-xl border border-gray-700">
-                            <label class="block text-sm text-gray-400 mb-2">پایه نوشیدنی</label>
-                            <select class="w-full bg-[#1a1614] border border-gray-600 rounded p-2 text-white">
-                                <option>اسپرسو</option><option>چای سبز</option><option>شکلات</option>
-                            </select>
-                        </div>
-                        <div class="bg-[#2a231f] p-4 rounded-xl border border-gray-700">
-                            <label class="block text-sm text-gray-400 mb-2">نوع شیر</label>
-                            <select class="w-full bg-[#1a1614] border border-gray-600 rounded p-2 text-white">
-                                <option>جو دوسر (Oat)</option><option>کامل</option><option>بادام</option>
-                            </select>
-                        </div>
-                        <div class="bg-[#2a231f] p-4 rounded-xl border border-gray-700">
-                            <label class="block text-sm text-gray-400 mb-2">شیرین‌کننده</label>
-                            <select class="w-full bg-[#1a1614] border border-gray-600 rounded p-2 text-white">
-                                <option>استویا</option><option>شکر قهوه‌ای</option><option>عسل</option>
-                            </select>
-                        </div>
-                    </div>
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(14,10,5,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(200,152,58,0.2);
+  padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-size: 1.4rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  color: var(--cream2); text-decoration: none; font-size: 0.9rem;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
+.nav-actions { display: flex; gap: 0.75rem; align-items: center; }
 
-                    <div class="space-y-4 bg-[#2a231f] p-6 rounded-xl border border-gray-700">
-                        <div>
-                            <label class="flex justify-between text-sm mb-1"><span class="text-gray-300">مقدار یخ</span><span class="text-blue-400">متوسط</span></label>
-                            <input type="range" class="w-full accent-blue-500" min="0" max="100" value="50">
-                        </div>
-                        <div>
-                            <label class="flex justify-between text-sm mb-1"><span class="text-gray-300">دمای نوشیدنی</span><span class="text-red-400">85°C</span></label>
-                            <input type="range" class="w-full accent-red-500" min="0" max="100" value="85">
-                        </div>
-                    </div>
+/* BUTTONS */
+.btn {
+  padding: 0.5rem 1.25rem; border-radius: 100px; border: none;
+  font-family: 'Vazirmatn', sans-serif; font-size: 0.875rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-ghost {
+  background: transparent; color: var(--cream); border: 1px solid rgba(200,152,58,0.4);
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  color: var(--bg); box-shadow: 0 4px 20px rgba(232,101,26,0.3);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(232,101,26,0.45); }
+.btn-lg { padding: 0.875rem 2rem; font-size: 1rem; }
 
-                    <button class="w-full mt-6 bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 py-3 rounded-xl font-bold text-lg transition shadow-lg">
-                        رندر مدل سه‌بعدی و ساخت (3D)
-                    </button>
-                </div>
+/* HERO */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  padding-top: 64px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(200,152,58,0.12) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 80% at 80% 80%, rgba(232,101,26,0.08) 0%, transparent 60%);
+}
+.hero-grid {
+  position: absolute; inset: 0; opacity: 0.04;
+  background-image: linear-gradient(var(--cream) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--cream) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+  align-items: center; max-width: 1200px; margin: 0 auto; padding: 2rem;
+}
+.hero-text h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900; line-height: 1.15;
+  margin-bottom: 1.5rem;
+}
+.hero-text h1 span {
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-text p {
+  font-size: 1.1rem; color: var(--cream2); line-height: 1.8;
+  margin-bottom: 2rem;
+}
+.hero-stats {
+  display: flex; gap: 2rem; margin-top: 2.5rem;
+  padding-top: 2rem; border-top: 1px solid rgba(200,152,58,0.2);
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-size: 1.75rem; font-weight: 900; color: var(--gold);
+  display: block; line-height: 1;
+}
+.stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
 
-                <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between">
-                    <div>
-                        <h2 class="text-xl font-bold border-b border-gray-700 pb-3 mb-5 text-blue-400">
-                            <i class="fa-solid fa-chart-pie ml-2"></i>سیستم طعم‌سنج
-                        </h2>
-                        <div class="space-y-4">
-                            <div><div class="flex justify-between text-xs mb-1"><span>تلخی</span><span>80%</span></div><div class="w-full bg-gray-700 rounded-full h-1.5"><div class="bg-yellow-800 h-1.5 rounded-full" style="width: 80%"></div></div></div>
-                            <div><div class="flex justify-between text-xs mb-1"><span>شیرینی</span><span>20%</span></div><div class="w-full bg-gray-700 rounded-full h-1.5"><div class="bg-pink-500 h-1.5 rounded-full" style="width: 20%"></div></div></div>
-                            <div><div class="flex justify-between text-xs mb-1"><span>اسیدیته</span><span>45%</span></div><div class="w-full bg-gray-700 rounded-full h-1.5"><div class="bg-green-500 h-1.5 rounded-full" style="width: 45%"></div></div></div>
-                            <div><div class="flex justify-between text-xs mb-1"><span>کافئین</span><span>90%</span></div><div class="w-full bg-gray-700 rounded-full h-1.5"><div class="bg-red-500 h-1.5 rounded-full" style="width: 90%"></div></div></div>
-                        </div>
-                    </div>
-                    <div class="mt-8 bg-[#2a231f] p-4 rounded-xl border border-gray-600">
-                        <div class="flex justify-between font-bold text-gray-200 text-sm">
-                            <span>🔥 85 کالری</span>
-                            <span>💧 2g چربی</span>
-                        </div>
-                    </div>
-                </div>
+/* CUP ANIMATION */
+.hero-visual { display: flex; justify-content: center; align-items: center; }
+.cup-scene { position: relative; width: 300px; height: 380px; }
+.cup-svg { width: 100%; height: 100%; }
+.steam-path {
+  animation: steam 2.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+.steam-path:nth-child(2) { animation-delay: 0.5s; }
+.steam-path:nth-child(3) { animation-delay: 1s; }
+@keyframes steam {
+  0%, 100% { opacity: 0; transform: translateY(0) scaleX(1); }
+  40% { opacity: 0.8; transform: translateY(-20px) scaleX(1.2); }
+  80% { opacity: 0; transform: translateY(-40px) scaleX(0.8); }
+}
+.liquid-fill {
+  animation: liquidPulse 3s ease-in-out infinite;
+}
+@keyframes liquidPulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
+}
+.cup-glow {
+  position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%);
+  width: 200px; height: 40px;
+  background: radial-gradient(ellipse, rgba(200,152,58,0.3), transparent 70%);
+  filter: blur(10px);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.15); }
+}
+.particles-container { position: absolute; inset: 0; pointer-events: none; }
+.particle {
+  position: absolute; border-radius: 50%;
+  background: var(--gold); opacity: 0;
+  animation: floatUp 4s ease-in infinite;
+}
 
-            </div>
-        </section>
+/* SECTIONS */
+section { padding: 6rem 2rem; }
+.section-label {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 1rem;
+}
+.section-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; line-height: 1.2;
+  margin-bottom: 1rem;
+}
+.section-sub { color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 480px; }
+.section-header { margin-bottom: 3rem; }
 
-        <section id="social" class="tab-content glass-panel p-8 rounded-3xl text-center">
-            <img src="https://via.placeholder.com/100" class="rounded-full mx-auto mb-4 border-4 border-yellow-500">
-            <h2 class="text-2xl font-bold mb-2">Master Barista</h2>
-            <p class="text-gray-400 mb-6">Level 42 | 15,200 XP</p>
-            <div class="flex justify-center gap-4">
-                <div class="bg-[#2a231f] p-4 rounded-xl w-32"><i class="fa-solid fa-trophy text-yellow-500 text-2xl mb-2 block"></i> 12 مدال</div>
-                <div class="bg-[#2a231f] p-4 rounded-xl w-32"><i class="fa-solid fa-heart text-red-500 text-2xl mb-2 block"></i> 140 لایک</div>
-                <div class="bg-[#2a231f] p-4 rounded-xl w-32"><i class="fa-solid fa-coins text-yellow-300 text-2xl mb-2 block"></i> 850 کوین</div>
-            </div>
-            <p class="mt-8 text-gray-500"><i class="fa-solid fa-lock mr-2"></i> سیستم ورود کاربران و اشتراک‌گذاری در سرور بک‌اند پیاده‌سازی می‌شود.</p>
-        </section>
+/* BUILDER SECTION */
+#builder {
+  background: var(--bg2);
+  border-top: 1px solid rgba(200,152,58,0.1);
+  border-bottom: 1px solid rgba(200,152,58,0.1);
+}
+.builder-container { max-width: 1200px; margin: 0 auto; }
+.builder-layout { display: grid; grid-template-columns: 1fr 360px; gap: 3rem; align-items: start; }
+.builder-steps { display: flex; flex-direction: column; gap: 1.5rem; }
 
-    </main>
+.step-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.15);
+  border-radius: 16px; padding: 1.5rem;
+  transition: border-color 0.2s;
+}
+.step-card:hover { border-color: rgba(200,152,58,0.3); }
+.step-header {
+  display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;
+}
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  color: var(--bg); font-weight: 900; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.step-title { font-size: 1rem; font-weight: 700; }
 
-    <script>
-        // 1. سیستم تب بندی
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-        }
+.options-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.opt-btn {
+  padding: 0.4rem 0.9rem; border-radius: 100px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(200,152,58,0.2);
+  color: var(--cream2); font-family: 'Vazirmatn', sans-serif; font-size: 0.82rem;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.opt-btn:hover { border-color: var(--gold); color: var(--gold); }
+.opt-btn.selected {
+  background: rgba(200,152,58,0.15); border-color: var(--gold); color: var(--gold);
+}
 
-        // 2. دیتابیس لوکال برای رندر کردن منوهای طولانی بدون کثیف شدن HTML
-        const menuData = {
-            "☕ نوشیدنی‌های گرم": ["اسپرسو", "دبل اسپرسو", "آمریکانو", "لاته", "وانیلا لاته", "کارامل لاته", "کاپوچینو", "موکا", "فلت وایت", "کورتادو", "ماکیاتو", "ترک", "فرانسه", "V60", "چای ماسالا"],
-            "🧊 نوشیدنی‌های سرد": ["کولد برو", "آیس آمریکانو", "آیس لاته", "فراپوچینو", "میلک شیک شکلات", "اسموتی انبه", "موهیتو", "لیموناد", "آیس ماچا"],
-            "🍰 دسرها": ["تیرامیسو", "چیزکیک", "براونی", "دونات", "وافل", "پنکیک", "کروسان", "ماکارون", "باقلوا", "تارت میوه"],
-            "🥪 غذاهای سبک": ["کروسان ژامبون", "پنینی مرغ", "ساندویچ تن", "تست آووکادو", "سالاد سزار"]
-        };
+.slider-row {
+  display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;
+}
+.slider-label { font-size: 0.82rem; color: var(--muted); width: 80px; flex-shrink: 0; }
+.slider-val { font-size: 0.82rem; color: var(--gold); width: 30px; text-align: left; }
+input[type="range"] {
+  flex: 1; -webkit-appearance: none; height: 4px;
+  background: rgba(200,152,58,0.2); border-radius: 2px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--gold); cursor: pointer;
+  box-shadow: 0 0 8px rgba(200,152,58,0.5);
+}
 
-        const menuContainer = document.getElementById('menu-container');
-        
-        for (const [category, items] of Object.entries(menuData)) {
-            let categoryDiv = document.createElement('div');
-            categoryDiv.className = "bg-[#2a231f] p-5 rounded-2xl border border-gray-700 shadow-lg";
-            
-            let title = document.createElement('h3');
-            title.className = "text-xl font-bold mb-4 text-yellow-600 border-b border-gray-600 pb-2";
-            title.innerText = category;
-            categoryDiv.appendChild(title);
+/* PREVIEW CARD */
+.preview-card {
+  position: sticky; top: 90px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 20px; padding: 1.75rem;
+}
+.preview-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+.preview-cup { text-align: center; margin-bottom: 1.5rem; }
+.preview-cup-svg { width: 120px; height: 120px; }
+.preview-name {
+  font-size: 1.3rem; font-weight: 900; text-align: center; margin-bottom: 0.25rem;
+}
+.preview-desc { font-size: 0.82rem; color: var(--muted); text-align: center; margin-bottom: 1.5rem; }
+.preview-bars { margin-bottom: 1.5rem; }
+.bar-row { margin-bottom: 0.75rem; }
+.bar-top { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px; }
+.bar-name { color: var(--muted); }
+.bar-val { color: var(--cream2); }
+.bar-track {
+  height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--amber));
+  transition: width 0.4s ease;
+}
+.preview-macros {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+  padding-top: 1.25rem; border-top: 1px solid rgba(200,152,58,0.15);
+  margin-bottom: 1.5rem;
+}
+.macro-item { text-align: center; }
+.macro-val { font-size: 1rem; font-weight: 700; color: var(--gold); }
+.macro-unit { font-size: 0.65rem; color: var(--muted); }
+.macro-name { font-size: 0.7rem; color: var(--muted); }
+.preview-actions { display: flex; gap: 0.5rem; }
+.preview-actions .btn { flex: 1; text-align: center; }
 
-            let ul = document.createElement('ul');
-            ul.className = "space-y-2 text-sm text-gray-300";
-            
-            items.forEach(item => {
-                let li = document.createElement('li');
-                li.className = "hover:text-white hover:bg-gray-700 p-1 rounded cursor-pointer transition";
-                li.innerHTML = `<i class="fa-solid fa-caret-left text-gray-500 ml-2"></i> ${item}`;
-                ul.appendChild(li);
-            });
+/* MENU SECTION */
+#menu { background: var(--bg); }
+.menu-container { max-width: 1200px; margin: 0 auto; }
+.menu-tabs {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+  border-bottom: 1px solid rgba(200,152,58,0.15);
+  margin-bottom: 2.5rem; padding-bottom: 0;
+}
+.tab-btn {
+  padding: 0.5rem 1.25rem; background: transparent; border: none;
+  color: var(--muted); font-family: 'Vazirmatn', sans-serif; font-size: 0.9rem;
+  cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent;
+  margin-bottom: -1px; border-radius: 4px 4px 0 0;
+}
+.tab-btn:hover { color: var(--cream); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.menu-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;
+}
+.menu-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.1);
+  border-radius: 14px; padding: 1.25rem;
+  cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+}
+.menu-item::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(200,152,58,0.05), transparent);
+  opacity: 0; transition: opacity 0.2s;
+}
+.menu-item:hover { border-color: rgba(200,152,58,0.3); transform: translateY(-2px); }
+.menu-item:hover::before { opacity: 1; }
+.menu-item-emoji { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+.menu-item-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
+.menu-item-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+.menu-item-price {
+  margin-top: 0.75rem; font-size: 0.82rem; color: var(--gold); font-weight: 700;
+}
+.menu-panel { display: none; }
+.menu-panel.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
 
-            categoryDiv.appendChild(ul);
-            menuContainer.appendChild(categoryDiv);
-        }
-    </script>
-</body>
-</html>
-                        <div class="flex justify-between font-bold text-gray-200 text-sm">
-                            <span>🔥 85 کالری</span>
-                            <span>💧 2g چربی</span>
-                        </div>
-                    </div>
-                </div>
+/* GAMIFICATION */
+#gamify {
+  background: var(--bg3);
+  border-top: 1px solid rgba(200,152,58,0.1);
+}
+.gamify-container { max-width: 1200px; margin: 0 auto; }
+.gamify-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+.level-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 20px; padding: 2rem;
+}
+.level-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.level-badge {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 900; color: var(--bg);
+  box-shadow: 0 0 20px rgba(200,152,58,0.4);
+}
+.level-info h3 { font-size: 1.2rem; font-weight: 900; }
+.level-info span { font-size: 0.8rem; color: var(--muted); }
+.xp-bar-track {
+  height: 12px; background: rgba(255,255,255,0.06); border-radius: 6px;
+  overflow: hidden; margin-bottom: 0.5rem;
+}
+.xp-bar-fill {
+  height: 100%; width: 68%; border-radius: 6px;
+  background: linear-gradient(90deg, var(--gold), var(--amber));
+  position: relative; overflow: hidden;
+}
+.xp-bar-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(200%); }
+}
+.xp-text { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); }
+.achievements-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1.5rem; }
+.ach-item {
+  background: rgba(255,255,255,0.04); border-radius: 12px; padding: 0.875rem;
+  text-align: center; border: 1px solid rgba(200,152,58,0.1);
+  transition: all 0.2s;
+}
+.ach-item.earned { border-color: rgba(200,152,58,0.4); background: rgba(200,152,58,0.06); }
+.ach-item:hover { transform: translateY(-2px); }
+.ach-icon { font-size: 1.75rem; display: block; margin-bottom: 0.4rem; }
+.ach-name { font-size: 0.7rem; font-weight: 700; color: var(--cream2); }
+.ach-locked { opacity: 0.35; }
+.challenges-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.challenge-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.12);
+  border-radius: 12px; padding: 1rem 1.25rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.challenge-icon { font-size: 1.5rem; flex-shrink: 0; }
+.challenge-info { flex: 1; }
+.challenge-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
+.challenge-desc { font-size: 0.75rem; color: var(--muted); }
+.challenge-reward {
+  background: rgba(200,152,58,0.1); border: 1px solid rgba(200,152,58,0.3);
+  border-radius: 100px; padding: 0.25rem 0.75rem;
+  font-size: 0.75rem; font-weight: 700; color: var(--gold); white-space: nowrap;
+}
 
-            </div>
-        </section>
+/* AI SECTION */
+#ai { background: var(--bg); }
+.ai-container { max-width: 900px; margin: 0 auto; text-align: center; }
+.ai-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 24px; padding: 2.5rem;
+  margin-top: 3rem;
+}
+.ai-chat { min-height: 240px; margin-bottom: 1.5rem; text-align: right; }
+.ai-msg {
+  display: flex; gap: 0.75rem; margin-bottom: 1rem; align-items: flex-start;
+}
+.ai-msg.user { flex-direction: row-reverse; }
+.ai-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.ai-bubble {
+  background: rgba(200,152,58,0.08); border: 1px solid rgba(200,152,58,0.15);
+  border-radius: 14px 14px 14px 4px;
+  padding: 0.875rem 1.125rem; max-width: 80%;
+  font-size: 0.9rem; line-height: 1.7; text-align: right;
+}
+.user-bubble {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px 14px 4px 14px;
+  padding: 0.875rem 1.125rem; max-width: 80%;
+  font-size: 0.9rem; line-height: 1.7; text-align: right;
+}
+.ai-input-row {
+  display: flex; gap: 0.75rem; align-items: center;
+}
+.ai-input {
+  flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(200,152,58,0.25);
+  border-radius: 100px; padding: 0.75rem 1.25rem;
+  color: var(--cream); font-family: 'Vazirmatn', sans-serif; font-size: 0.9rem;
+  outline: none; transition: border-color 0.2s;
+}
+.ai-input:focus { border-color: var(--gold); }
+.ai-input::placeholder { color: var(--muted); }
+.ai-typing { display: flex; gap: 4px; align-items: center; padding: 0.5rem 0; }
+.ai-typing span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
+  animation: typingDot 1.2s ease-in-out infinite;
+}
+.ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+.ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
 
-        <section id="social" class="tab-content glass-panel p-8 rounded-3xl text-center">
-            <img src="https://via.placeholder.com/100" class="rounded-full mx-auto mb-4 border-4 border-yellow-500">
-            <h2 class="text-2xl font-bold mb-2">Master Barista</h2>
-            <p class="text-gray-400 mb-6">Level 42 | 15,200 XP</p>
-            <div class="flex justify-center gap-4">
-                <div class="bg-[#2a231f] p-4 rounded-xl w-32"><i class="fa-solid fa-trophy text-yellow-500 text-2xl mb-2 block"></i> 12 مدال</div>
-                <div class="bg-[#2a231f] p-4 rounded-xl w-32"><i class="fa-solid fa-heart text-red-500 text-2xl mb-2 block"></i> 140 لایک</div>
-                <div class="bg-[#2a231f] p-4 rounded-xl w-32"><i class="fa-solid fa-coins text-yellow-300 text-2xl mb-2 block"></i> 850 کوین</div>
-            </div>
-            <p class="mt-8 text-gray-500"><i class="fa-solid fa-lock mr-2"></i> سیستم ورود کاربران و اشتراک‌گذاری در سرور بک‌اند پیاده‌سازی می‌شود.</p>
-        </section>
+/* AMBIENT */
+#ambient { background: var(--bg2); border-top: 1px solid rgba(200,152,58,0.1); }
+.ambient-container { max-width: 900px; margin: 0 auto; text-align: center; }
+.ambient-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+.ambient-item {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(200,152,58,0.12);
+  border-radius: 16px; padding: 1.5rem 1rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.ambient-item:hover { border-color: rgba(200,152,58,0.3); transform: translateY(-2px); }
+.ambient-item.playing { border-color: var(--gold); background: rgba(200,152,58,0.06); }
+.ambient-icon { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+.ambient-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
+.ambient-desc { font-size: 0.75rem; color: var(--muted); }
+.ambient-wave {
+  display: flex; justify-content: center; align-items: flex-end; gap: 3px;
+  height: 24px; margin-top: 0.75rem;
+}
+.wave-bar {
+  width: 4px; background: var(--gold); border-radius: 2px; opacity: 0;
+  transition: opacity 0.3s;
+}
+.ambient-item.playing .wave-bar {
+  opacity: 1; animation: waveDance 0.8s ease-in-out infinite alternate;
+}
+.wave-bar:nth-child(2) { animation-delay: 0.1s !important; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s !important; }
+.wave-bar:nth-child(4) { animation-delay: 0.15s !important; }
+.wave-bar:nth-child(5) { animation-delay: 0.05s !important; }
+@keyframes waveDance {
+  from { height: 4px; }
+  to { height: 20px; }
+}
 
-    </main>
+/* FOOTER */
+footer {
+  background: var(--bg); border-top: 1px solid rgba(200,152,58,0.1);
+  padding: 3rem 2rem;
+  text-align: center;
+}
+.footer-logo {
+  font-size: 1.75rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 0.75rem;
+}
+.footer-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 2rem; }
+.footer-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+.footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold); }
+.footer-copy { margin-top: 2rem; font-size: 0.75rem; color: rgba(122,96,64,0.6); }
 
-    <script>
-        // 1. سیستم تب بندی
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-        }
+/* TOAST */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: rgba(26,16,8,0.95); border: 1px solid rgba(200,152,58,0.4);
+  border-radius: 100px; padding: 0.75rem 1.5rem;
+  font-size: 0.875rem; color: var(--cream); z-index: 999;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  backdrop-filter: blur(10px);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
 
-        // 2. دیتابیس لوکال برای رندر کردن منوهای طولانی بدون کثیف شدن HTML
-        const menuData = {
-            "☕ نوشیدنی‌های گرم": ["اسپرسو", "دبل اسپرسو", "آمریکانو", "لاته", "وانیلا لاته", "کارامل لاته", "کاپوچینو", "موکا", "فلت وایت", "کورتادو", "ماکیاتو", "ترک", "فرانسه", "V60", "چای ماسالا"],
-            "🧊 نوشیدنی‌های سرد": ["کولد برو", "آیس آمریکانو", "آیس لاته", "فراپوچینو", "میلک شیک شکلات", "اسموتی انبه", "موهیتو", "لیموناد", "آیس ماچا"],
-            "🍰 دسرها": ["تیرامیسو", "چیزکیک", "براونی", "دونات", "وافل", "پنکیک", "کروسان", "ماکارون", "باقلوا", "تارت میوه"],
-            "🥪 غذاهای سبک": ["کروسان ژامبون", "پنینی مرغ", "ساندویچ تن", "تست آووکادو", "سالاد سزار"]
-        };
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero-content { grid-template-columns: 1fr; text-align: center; }
+  .hero-visual { display: none; }
+  .builder-layout { grid-template-columns: 1fr; }
+  .preview-card { position: static; }
+  .gamify-layout { grid-template-columns: 1fr; }
+  .ambient-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav-links { display: none; }
+}
 
-        const menuContainer = document.getElementById('menu-container');
-        
-        for (const [category, items] of Object.entries(menuData)) {
-            let categoryDiv = document.createElement('div');
-            categoryDiv.className = "bg-[#2a231f] p-5 rounded-2xl border border-gray-700 shadow-lg";
-            
-            let title = document.createElement('h3');
-            title.className = "text-xl font-bold mb-4 text-yellow-600 border-b border-gray-600 pb-2";
-            title.innerText = category;
-            categoryDiv.appendChild(title);
-
-            let ul = document.createElement('ul');
-            ul.className = "space-y-2 text-sm text-gray-300";
-            
-            items.forEach(item => {
-                let li = document.createElement('li');
-                li.className = "hover:text-white hover:bg-gray-700 p-1 rounded cursor-pointer transition";
-                li.innerHTML = `<i class="fa-solid fa-caret-left text-gray-500 ml-2"></i> ${item}`;
-                ul.appendChild(li);
-            });
-
-            categoryDiv.appendChild(ul);
-            menuContainer.appendChild(categoryDiv);
-        }
-    </script>
-</body>
-</html>
-
-        /* === Customizer Section === */
-        .customizer-section {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            height: fit-content;
-            position: sticky;
-            top: 2rem;
-        }
-
-        .addons-list {
-            margin: 1.5rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-
-        .addon-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-        }
-
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--accent-color);
-        }
-
-        .btn-make {
-            width: 100%;
-            padding: 1rem;
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            margin-top: 1rem;
-        }
-
-        .btn-make:hover { background-color: var(--accent-hover); }
-        .btn-make:disabled { background-color: #ccc; cursor: not-allowed; }
-
-        /* === Result Output === */
-        #result-box {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            border-radius: 8px;
-            background-color: #f4f1ea;
-            border: 1px dashed var(--accent-color);
-            display: none;
-            text-align: center;
-        }
-
-        #result-box h3 { color: var(--accent-color); margin-bottom: 1rem; }
-        .final-ingredients { font-style: italic; color: #555; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>کافه مینیمال</h1>
-        <p class="subtitle">نوشیدنی یا دسر خود را انتخاب کنید، طعم‌ها را ترکیب کنید و لذت ببرید</p>
-    </header>
-
-    <main class="container">
-        <!-- Menu Section -->
-        <section class="menu-section">
-            <h2>منوی کافه</h2>
-
-            <h3 class="category-title">نوشیدنی‌های گرم ☕</h3>
-            <div class="items-grid" id="hot-drinks"></div>
-
-            <h3 class="category-title">نوشیدنی‌های سرد 🧊</h3>
-            <div class="items-grid" id="cold-drinks"></div>
-
-            <h3 class="category-title">دسرها 🍰</h3>
-            <div class="items-grid" id="desserts"></div>
-        </section>
-
-        <!-- Customizer Section -->
-        <section class="customizer-section">
-            <h2>شخصی‌سازی سفارش</h2>
-            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">ابتدا یک آیتم از منو انتخاب کنید.</p>
-            
-            <div class="addons-list" id="addons-container">
-                <!-- Addons will be injected here via JS -->
-            </div>
-
-            <button class="btn-make" id="make-btn" disabled>آماده‌سازی سفارش</button>
-
-            <div id="result-box">
-                <h3>سفارش شما آماده است! ✨</h3>
-                <p id="final-name" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;"></p>
-                <p>ترکیبات: <span class="final-ingredients" id="final-ingredients"></span></p>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        // --- Data Structure ---
-        const menu = {
-            hot: [
-                { id: 'h1', name: 'اسپرسو', ingredients: ['عصاره قهوه خالص'] },
-                { id: 'h2', name: 'کاپوچینو', ingredients: ['اسپرسو', 'شیر بخار داده شده', 'فوم شیر'] },
-                { id: 'h3', name: 'لاته', ingredients: ['اسپرسو', 'شیر گرم فراوان', 'کف شیر ملایم'] },
-                { id: 'h4', name: 'چای ماسالا', ingredients: ['چای سیاه', 'شیر', 'زنجبیل', 'هل', 'دارچین', 'میخک'] }
-            ],
-            cold: [
-                { id: 'c1', name: 'آیس لاته', ingredients: ['اسپرسو', 'شیر سرد', 'یخ'] },
-                { id: 'c2', name: 'موخیتو', ingredients: ['نعناع تازه', 'لیمو ترش', 'سودا', 'یخ پودری'] },
-                { id: 'c3', name: 'فراپوچینو', ingredients: ['قهوه بِلِند شده', 'شیر', 'یخ', 'خامه فرم گرفته'] }
-            ],
-            dessert: [
-                { id: 'd1', name: 'کیک شکلاتی خیس', ingredients: ['آرد', 'پودر کاکائو غنی', 'کره', 'تخم‌مرغ', 'سس شکلات'] },
-                { id: 'd2', name: 'چیزکیک نیویورکی', ingredients: ['پنیر خامه‌ای', 'بیسکویت دایجستیو', 'کره', 'وانیل'] },
-                { id: 'd3', name: 'تیرامیسو', ingredients: ['پنیر ماسکارپونه', 'بیسکویت لیدی فینگر', 'قهوه', 'پودر کاکائو'] }
-            ]
-        };
-
-        const addons = [
-            { id: 'a1', name: 'شکر قهوه‌ای' },
-            { id: 'a2', name: 'شات اضافه اسپرسو' },
-            { id: 'a3', name: 'سیروپ کارامل' },
-            { id: 'a4', name: 'سیروپ وانیل' },
-            { id: 'a5', name: 'خامه اضافه' },
-            { id: 'a6', name: 'یخ اضافه' }
-        ];
-
-        // --- State ---
-        let selectedItem = null;
-        let selectedAddons = [];
-
-        // --- DOM Elements ---
-        const hotContainer = document.getElementById('hot-drinks');
-        const coldContainer = document.getElementById('cold-drinks');
-        const dessertContainer = document.getElementById('desserts');
-        const addonsContainer = document.getElementById('addons-container');
-        const makeBtn = document.getElementById('make-btn');
-        const resultBox = document.getElementById('result-box');
-
-        // --- Functions ---
-        function renderMenu(items, container) {
-            items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'item-card';
-                div.innerHTML = `
-                    <div style="font-size: 1.1rem; font-weight: bold;">${item.name}</div>
-                    <span class="item-ingredients">${item.ingredients.join('، ')}</span>
-                `;
-                div.onclick = () => selectItem(item, div);
-                container.appendChild(div);
-            });
-        }
-
-        function renderAddons() {
-            addons.forEach(addon => {
-                const label = document.createElement('label');
-                label.className = 'addon-item';
-                label.innerHTML = `
-                    <input type="checkbox" value="${addon.name}" onchange="toggleAddon(this)">
-                    ${addon.name}
-                `;
-                addonsContainer.appendChild(label);
-            });
-        }
-
-        function selectItem(item, element) {
-            // Remove selection from all cards
-            document.querySelectorAll('.item-card').forEach(el => el.classList.remove('selected'));
-            
-            // Add selection to clicked card
-            element.classList.add('selected');
-            selectedItem = item;
-            
-            // Enable button and hide previous result
-            makeBtn.disabled = false;
-            resultBox.style.display = 'none';
-        }
-
-        window.toggleAddon = function(checkbox) {
-            if (checkbox.checked) {
-                selectedAddons.push(checkbox.value);
-            } else {
-                selectedAddons = selectedAddons.filter(addon => addon !== checkbox.value);
-            }
-        };
-
-        makeBtn.onclick = () => {
-            if (!selectedItem) return;
-
-            // Prepare final data
-            const baseIngredients = [...selectedItem.ingredients];
-            const finalCombination = baseIngredients.concat(selectedAddons);
-
-            // Update UI
-            document.getElementById('final-name').innerText = selectedItem.name + (selectedAddons.length > 0 ? ' (شخصی‌سازی شده)' : '');
-            document.getElementById('final-ingredients').innerText = finalCombination.join(' + ');
-            
-            // Show result with animation
-            resultBox.style.display = 'block';
-            resultBox.animate([
-                { opacity: 0, transform: 'scale(0.95)' },
-                { opacity: 1, transform: 'scale(1)' }
-            ], { duration: 400, fill: 'forwards' });
-        };
-
-        // --- Initialization ---
-        renderMenu(menu.hot, hotContainer);
-        renderMenu(menu.cold, coldContainer);
-        renderMenu(menu.dessert, dessertContainer);
-        renderAddons();
-    </script>
-</body>
-</html>
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2); border: 1px solid rgba(
