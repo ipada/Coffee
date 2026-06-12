@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کافه‌ی من — سازنده‌ی نوشیدنی</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0f0e0c;
+    --surface: #181613;
+    --card: #1e1b17;
+    --border: #2a2520;
+    --accent: #c8843a;
+    --accent-dim: #7a4e1f;
+    --warm: #e8c17a;
+    --cool: #7ab8e8;
+    --text: #e8e0d4;
+    --text-dim: #8a7f72;
+    --text-muted: #5a5248;
+    --green: #7ec887;
+    --pink: #e87ab8;
+    --cream: #f0e8d4;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+    overflow-x: hidden;
+  }
+
+  /* ── AMBIENT GLOW ── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(200,132,58,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(15,14,12,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--accent);
+  }
+  .logo span { color: var(--text-dim); font-weight: 300; font-size: 0.9rem; margin-right: 8px; }
+
+  .cup-display {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 6px 16px;
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .cup-display:hover { border-color: var(--accent); }
+  .cup-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+  /* ── LAYOUT ── */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    position: relative; z-index: 1;
+  }
+
+  /* ── PANEL TITLES ── */
+  .panel-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  /* ── CATEGORY TABS ── */
+  .cats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .cat-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 24px;
+    padding: 7px 18px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cat-btn:hover { border-color: var(--accent); color: var(--text); }
+  .cat-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* ── DRINK GRID ── */
+  .drink-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .drink-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .drink-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(200,132,58,0.05));
+    pointer-events: none;
+  }
+  .drink-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .drink-card.selected {
+    border-color: var(--accent);
+    background: #1f1b14;
+    box-shadow: 0 0 0 1px var(--accent), 0 8px 24px rgba(200,132,58,0.1);
+  }
+
+  .drink-emoji { font-size: 2rem; margin-bottom: 8px; display: block; }
+  .drink-name { font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .drink-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; }
+  .drink-tag {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .tag-hot { background: rgba(200,132,58,0.15); color: var(--accent); }
+  .tag-cold { background: rgba(122,184,232,0.15); color: var(--cool); }
+  .tag-dessert { background: rgba(232,122,184,0.15); color: var(--pink); }
+  .tag-special { background: rgba(126,200,135,0.15); color: var(--green); }
+
+  /* ── CUSTOMIZER SECTION ── */
+  .customize-section {
+    margin-top: 8px;
+  }
+
+  .section-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── SIZE PICKER ── */
+  .size-btns {
+    display: flex; gap: 8px; margin-bottom: 20px;
+  }
+  .size-btn {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 0.78rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .size-btn:hover { border-color: var(--accent); color: var(--text); }
+  .size-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(200,132,58,0.08); font-weight: 600; }
+  .size-vol { font-size: 0.62rem; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── ADDONS ── */
+  .addons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 20px;
+  }
+
+  .addon-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    text-align: right;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .addon-btn:hover { border-color: var(--accent-dim); }
+  .addon-btn.active {
+    border-color: var(--accent);
+    background: rgba(200,132,58,0.08);
+  }
+  .addon-name { font-size: 0.78rem; color: var(--text); }
+  .addon-emoji { font-size: 1rem; }
+  .addon-check {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem;
+    transition: all 0.18s;
+  }
+  .addon-btn.active .addon-check {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* ── INTENSITY SLIDERS ── */
+  .slider-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px;
+  }
+  .slider-label { font-size: 0.75rem; color: var(--text-dim); width: 70px; flex-shrink: 0; }
+  .slider-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+  }
+  .slider-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+    border-radius: 2px;
+    transition: width 0.1s;
+  }
+  .slider-thumb {
+    position: absolute;
+    top: 50%; right: 0;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translate(50%, -50%);
+    box-shadow: 0 0 0 3px rgba(200,132,58,0.2);
+    cursor: grab;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%; height: 4px;
+    background: transparent;
+    position: relative; z-index: 2;
+    cursor: pointer;
+    margin: 0;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,132,58,0.25);
+    cursor: grab;
+  }
+  .custom-slider { position: relative; flex: 1; }
+  .custom-slider input { position: absolute; inset: 0; opacity: 0; z-index: 10; }
+  .custom-slider .track { height: 4px; background: var(--border); border-radius: 2px; position: relative; }
+  .custom-slider .fill { height: 100%; background: linear-gradient(to left, var(--accent), var(--accent-dim)); border-radius: 2px; }
+  .custom-slider .thumb {
+    position: absolute; top: 50%; 
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translate(50%, -50%);
+    pointer-events: none;
+  }
+  .slider-val { font-size: 0.72rem; color: var(--text-muted); width: 24px; text-align: left; flex-shrink: 0; }
+
+  /* ── TEMP TOGGLE ── */
+  .temp-toggle {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 3px;
+    margin-bottom: 20px;
+  }
+  .temp-btn {
+    flex: 1; padding: 7px;
+    border: none; border-radius: 5px;
+    font-family: inherit; font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-dim);
+    background: transparent;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .temp-btn.hot.active { background: rgba(200,132,58,0.2); color: var(--warm); }
+  .temp-btn.cold.active { background: rgba(122,184,232,0.2); color: var(--cool); }
+  .temp-btn.iced.active { background: rgba(122,184,232,0.1); color: #a0d4f5; }
+
+  /* ── CUP PREVIEW (RIGHT PANEL) ── */
+  .right-panel {
+    position: sticky;
+    top: 88px;
+    height: fit-content;
+  }
+
+  .cup-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .cup-visual {
+    position: relative;
+    width: 140px;
+    height: 180px;
+    margin: 0 auto 20px;
+  }
+
+  .cup-body {
+    position: absolute;
+    bottom: 0;
+    left: 50%; transform: translateX(-50%);
+    width: 100px;
+    height: 140px;
+    border-radius: 6px 6px 20px 20px;
+    border: 2px solid var(--border);
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .cup-liquid {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    transition: height 0.5s cubic-bezier(0.34,1.56,0.64,1), background 0.5s;
+    border-radius: 0 0 18px 18px;
+  }
+
+  .cup-foam {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 20px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 0;
+    transition: opacity 0.3s;
+  }
+
+  .cup-ice {
+    position: absolute;
+    bottom: 20px; left: 8px; right: 8px;
+    height: 30px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    display: flex; gap: 4px; align-items: flex-end;
+  }
+  .ice-cube {
+    width: 18px; height: 18px;
+    background: rgba(200,230,255,0.5);
+    border-radius: 3px;
+    border: 1px solid rgba(200,230,255,0.3);
+  }
+
+  .cup-steam {
+    position: absolute;
+    top: -28px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 6px;
+  }
+  .steam-line {
+    width: 2px;
+    background: linear-gradient(to top, rgba(255,255,255,0.3), transparent);
+    border-radius: 1px;
+    animation: steam 2.5s ease-in-out infinite;
+    opacity: 0;
+  }
+  .steam-line:nth-child(2) { animation-delay: 0.7s; height: 18px; }
+  .steam-line:nth-child(3) { animation-delay: 1.4s; height: 14px; }
+  @keyframes steam {
+    0% { height: 0; opacity: 0; transform: translateY(0) scaleX(1); }
+    40% { opacity: 0.6; }
+    100% { height: 24px; opacity: 0; transform: translateY(-12px) scaleX(1.5); }
+  }
+
+  .cup-lid {
+    position: absolute;
+    top: -6px; left: 50%;
+    transform: translateX(-50%);
+    width: 108px; height: 14px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 6px 6px 0 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .cup-name {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .cup-sub {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    min-height: 18px;
+  }
+
+  /* ── INGREDIENTS LIST ── */
+  .ing-list {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+  .ing-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0;
+    font-size: 0.75rem;
+    border-bottom: 1px dashed rgba(42,37,32,0.8);
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+  .ing-name { color: var(--text-dim); display: flex; align-items: center; gap: 5px; }
+  .ing-amount { color: var(--text-muted); font-size: 0.68rem; }
+
+  /* ── MAKE BUTTON ── */
+  .make-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent-dim), var(--accent));
+    border: none;
+    border-radius: var(--radius-sm);
+    color: white;
+    font-size: 0.92rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    letter-spacing: 0.3px;
+  }
+  .make-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(200,132,58,0.3);
+  }
+  .make-btn:active { transform: none; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 12px 24px;
+    font-size: 0.85rem;
+    color: var(--text);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    z-index: 999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── PLACEHOLDER ── */
+  .placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 200px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    gap: 10px;
+  }
+  .placeholder-emoji { font-size: 3rem; opacity: 0.4; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+    .right-panel { position: static; }
+    header { padding: 12px 16px; }
+    .main { padding: 20px 16px; }
+  }
+
+  /* ── HIDDEN ── */
+  .hidden { display: none; }
+
+  /* ── NOTE ── */
+  .note-row {
+    margin-bottom: 16px;
+  }
+  .note-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    direction: rtl;
+  }
+  .note-input:focus { border-color: var(--accent-dim); }
+  .note-input::placeholder { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">☕ کافه‌ی من <span>سازنده‌ی نوشیدنی</span></div>
+  <div class="cup-display" id="headerCup">
+    <div class="cup-dot"></div>
+    <span id="headerText">یه چیز انتخاب کن</span>
+  </div>
+</header>
+
+<div class="main">
+  <!-- LEFT: Menu & Customizer -->
+  <div>
+    <div class="panel-label">منوی نوشیدنی‌ها</div>
+    <div class="cats" id="cats"></div>
+    <div class="drink-grid" id="drinkGrid"></div>
+
+    <div class="customize-section" id="customizer" style="display:none">
+      <div class="section-title">دما</div>
+      <div class="temp-toggle" id="tempToggle"></div>
+
+      <div class="section-title">سایز</div>
+      <div class="size-btns" id="sizeBtns"></div>
+
+      <div class="section-title">شدت و طعم</div>
+      <div id="sliders"></div>
+
+      <div class="section-title">افزودنی‌ها</div>
+      <div class="addons-grid" id="addons"></div>
+
+      <div class="section-title">یادداشت برای باریستا</div>
+      <div class="note-row">
+        <textarea class="note-input" id="noteInput" rows="2" placeholder="مثلاً: خیلی شیرین نباشه..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Cup Preview -->
+  <div class="right-panel">
+    <div class="cup-card">
+      <div id="nothingSelected" class="placeholder">
+        <span class="placeholder-emoji">☕</span>
+        <span>یه نوشیدنی انتخاب کن</span>
+      </div>
+      <div id="cupPreview" class="hidden">
+        <div class="cup-visual" id="cupVisual">
+          <div class="cup-steam" id="cupSteam">
+            <div class="steam-line" style="height:20px"></div>
+            <div class="steam-line"></div>
+            <div class="steam-line" style="height:16px"></div>
+          </div>
+          <div class="cup-lid" id="cupLid"></div>
+          <div class="cup-body">
+            <div class="cup-liquid" id="cupLiquid">
+              <div class="cup-foam" id="cupFoam"></div>
+              <div class="cup-ice" id="cupIce">
+                <div class="ice-cube"></div>
+                <div class="ice-cube"></div>
+                <div class="ice-cube"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cup-name" id="cupName">—</div>
+        <div class="cup-sub" id="cupSub"></div>
+        <div class="ing-list" id="ingList"></div>
+      </div>
+    </div>
+    <button class="make-btn" id="makeBtn" style="display:none" onclick="makeDrink()">
+      ☕ این رو درست کن!
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const categories = [
+  { id: 'all', label: '✨ همه', emoji: '' },
+  { id: 'hot', label: '🔥 گرم', emoji: '' },
+  { id: 'cold', label: '❄️ سرد', emoji: '' },
+  { id: 'dessert', label: '🍮 دسر', emoji: '' },
+  { id: 'special', label: '🌿 ویژه', emoji: '' },
+];
+
+const drinks = [
+  // HOT
+  {
+    id: 'espresso', name: 'اسپرسو', cat: 'hot', emoji: '☕',
+    desc: 'غلیظ، تلخ، خالص', tag: 'hot',
+    color: '#3d1a0a', foam: true, steam: true,
+    base: [
+      { n: 'قهوه اسپرسو', a: '30ml' },
+    ],
+    sliders: ['تلخی', 'قوت'],
+    temps: ['hot'],
+  },
+  {
+    id: 'americano', name: 'آمریکانو', cat: 'hot', emoji: '🫖',
+    desc: 'اسپرسو با آب داغ', tag: 'hot',
+    color: '#4a2010', foam: false, steam: true,
+    base: [
+      { n: 'اسپرسو', a: '30ml' },
+      { n: 'آب داغ', a: '150ml' },
+    ],
+    sliders: ['تلخی', 'قوت'],
+    temps: ['hot', 'cold', 'iced'],
+  },
+  {
+    id: 'latte', name: 'لاته', cat: 'hot', emoji: '🥛',
+    desc: 'اسپرسو با شیر بخار پز', tag: 'hot',
+    color: '#8a5535', foam: true, steam: true,
+    base: [
+      { n: 'اسپرسو', a: '30ml' },
+      { n: 'شیر بخار', a: '200ml' },
+      { n: 'فوم شیر', a: '1 لایه' },
+    ],
+    sliders: ['قوت', 'شیر'],
+    temps: ['hot', 'iced'],
+  },
+  {
+    id: 'cappuccino', name: 'کاپوچینو', cat: 'hot', emoji: '☕',
+    desc: 'اسپرسو، شیر بخار و فوم غلیظ', tag: 'hot',
+    color: '#7a4520', foam: true, steam: true,
+    base: [
+      { n: 'اسپرسو', a: '30ml' },
+      { n: 'شیر بخار', a: '60ml' },
+      { n: 'فوم غلیظ', a: '60ml' },
+    ],
+    sliders: ['قوت', 'فوم'],
+    temps: ['hot'],
+  },
+  {
+    id: 'flat_white', name: 'فلت وایت', cat: 'hot', emoji: '☕',
+    desc: 'دابل اسپرسو با شیر ریستریتو', tag: 'hot',
+    color: '#6b3e20', foam: true, steam: true,
+    base: [
+      { n: 'دابل اسپرسو', a: '60ml' },
+      { n: 'شیر بخار', a: '130ml' },
+      { n: 'میکروفوم', a: 'کم' },
+    ],
+    sliders: ['قوت', 'شیر'],
+    temps: ['hot'],
+  },
+  {
+    id: 'macchiato', name: 'ماکیاتو', cat: 'hot', emoji: '☕',
+    desc: 'اسپرسو با کمی فوم', tag: 'hot',
+    color: '#5a2c10', foam: true, steam: true,
+    base: [
+      { n: 'اسپرسو', a: '30ml' },
+      { n: 'فوم شیر', a: '15ml' },
+    ],
+    sliders: ['تلخی'],
+    temps: ['hot'],
+  },
+  {
+    id: 'mocha', name: 'موکا', cat: 'hot', emoji: '🍫',
+    desc: 'اسپرسو، شکلات و شیر', tag: 'hot',
+    color: '#3d1e10', foam: true, steam: true,
+    base: [
+      { n: 'اسپرسو', a: '30ml' },
+      { n: 'سس شکلات', a: '20ml' },
+      { n: 'شیر بخار', a: '150ml' },
+      { n: '
