@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoffeeCraft — بساز، بنوش، بچرخ</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0E0A05;
+  --bg2: #1A1008;
+  --bg3: #251810;
+  --cream: #F5EDD6;
+  --cream2: #E8D9B8;
+  --gold: #C8983A;
+  --amber: #E8651A;
+  --muted: #7A6040;
+  --white: #FFFFFF;
+  --green: #4CAF7A;
+  --red: #E84040;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--bg);
+  color: var(--cream);
+  overflow-x: hidden;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(14,10,5,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(200,152,58,0.2);
+  padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-size: 1.4rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  color: var(--cream2); text-decoration: none; font-size: 0.9rem;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
+.nav-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+/* BUTTONS */
+.btn {
+  padding: 0.5rem 1.25rem; border-radius: 100px; border: none;
+  font-family: 'Vazirmatn', sans-serif; font-size: 0.875rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-ghost {
+  background: transparent; color: var(--cream); border: 1px solid rgba(200,152,58,0.4);
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  color: var(--bg); box-shadow: 0 4px 20px rgba(232,101,26,0.3);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(232,101,26,0.45); }
+.btn-lg { padding: 0.875rem 2rem; font-size: 1rem; }
+
+/* HERO */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  padding-top: 64px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(200,152,58,0.12) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 80% at 80% 80%, rgba(232,101,26,0.08) 0%, transparent 60%);
+}
+.hero-grid {
+  position: absolute; inset: 0; opacity: 0.04;
+  background-image: linear-gradient(var(--cream) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--cream) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+  align-items: center; max-width: 1200px; margin: 0 auto; padding: 2rem;
+}
+.hero-text h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900; line-height: 1.15;
+  margin-bottom: 1.5rem;
+}
+.hero-text h1 span {
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-text p {
+  font-size: 1.1rem; color: var(--cream2); line-height: 1.8;
+  margin-bottom: 2rem;
+}
+.hero-stats {
+  display: flex; gap: 2rem; margin-top: 2.5rem;
+  padding-top: 2rem; border-top: 1px solid rgba(200,152,58,0.2);
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-size: 1.75rem; font-weight: 900; color: var(--gold);
+  display: block; line-height: 1;
+}
+.stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+/* CUP ANIMATION */
+.hero-visual { display: flex; justify-content: center; align-items: center; }
+.cup-scene { position: relative; width: 300px; height: 380px; }
+.cup-svg { width: 100%; height: 100%; }
+.steam-path {
+  animation: steam 2.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+.steam-path:nth-child(2) { animation-delay: 0.5s; }
+.steam-path:nth-child(3) { animation-delay: 1s; }
+@keyframes steam {
+  0%, 100% { opacity: 0; transform: translateY(0) scaleX(1); }
+  40% { opacity: 0.8; transform: translateY(-20px) scaleX(1.2); }
+  80% { opacity: 0; transform: translateY(-40px) scaleX(0.8); }
+}
+.liquid-fill {
+  animation: liquidPulse 3s ease-in-out infinite;
+}
+@keyframes liquidPulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
+}
+.cup-glow {
+  position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%);
+  width: 200px; height: 40px;
+  background: radial-gradient(ellipse, rgba(200,152,58,0.3), transparent 70%);
+  filter: blur(10px);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.15); }
+}
+.particles-container { position: absolute; inset: 0; pointer-events: none; }
+.particle {
+  position: absolute; border-radius: 50%;
+  background: var(--gold); opacity: 0;
+  animation: floatUp 4s ease-in infinite;
+}
+
+/* SECTIONS */
+section { padding: 6rem 2rem; }
+.section-label {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 1rem;
+}
+.section-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; line-height: 1.2;
+  margin-bottom: 1rem;
+}
+.section-sub { color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 480px; }
+.section-header { margin-bottom: 3rem; }
+
+/* BUILDER SECTION */
+#builder {
+  background: var(--bg2);
+  border-top: 1px solid rgba(200,152,58,0.1);
+  border-bottom: 1px solid rgba(200,152,58,0.1);
+}
+.builder-container { max-width: 1200px; margin: 0 auto; }
+.builder-layout { display: grid; grid-template-columns: 1fr 360px; gap: 3rem; align-items: start; }
+.builder-steps { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.step-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.15);
+  border-radius: 16px; padding: 1.5rem;
+  transition: border-color 0.2s;
+}
+.step-card:hover { border-color: rgba(200,152,58,0.3); }
+.step-header {
+  display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;
+}
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  color: var(--bg); font-weight: 900; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.step-title { font-size: 1rem; font-weight: 700; }
+
+.options-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.opt-btn {
+  padding: 0.4rem 0.9rem; border-radius: 100px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(200,152,58,0.2);
+  color: var(--cream2); font-family: 'Vazirmatn', sans-serif; font-size: 0.82rem;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.opt-btn:hover { border-color: var(--gold); color: var(--gold); }
+.opt-btn.selected {
+  background: rgba(200,152,58,0.15); border-color: var(--gold); color: var(--gold);
+}
+
+.slider-row {
+  display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;
+}
+.slider-label { font-size: 0.82rem; color: var(--muted); width: 80px; flex-shrink: 0; }
+.slider-val { font-size: 0.82rem; color: var(--gold); width: 30px; text-align: left; }
+input[type="range"] {
+  flex: 1; -webkit-appearance: none; height: 4px;
+  background: rgba(200,152,58,0.2); border-radius: 2px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--gold); cursor: pointer;
+  box-shadow: 0 0 8px rgba(200,152,58,0.5);
+}
+
+/* PREVIEW CARD */
+.preview-card {
+  position: sticky; top: 90px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 20px; padding: 1.75rem;
+}
+.preview-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+.preview-cup { text-align: center; margin-bottom: 1.5rem; }
+.preview-cup-svg { width: 120px; height: 120px; }
+.preview-name {
+  font-size: 1.3rem; font-weight: 900; text-align: center; margin-bottom: 0.25rem;
+}
+.preview-desc { font-size: 0.82rem; color: var(--muted); text-align: center; margin-bottom: 1.5rem; }
+.preview-bars { margin-bottom: 1.5rem; }
+.bar-row { margin-bottom: 0.75rem; }
+.bar-top { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px; }
+.bar-name { color: var(--muted); }
+.bar-val { color: var(--cream2); }
+.bar-track {
+  height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--amber));
+  transition: width 0.4s ease;
+}
+.preview-macros {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+  padding-top: 1.25rem; border-top: 1px solid rgba(200,152,58,0.15);
+  margin-bottom: 1.5rem;
+}
+.macro-item { text-align: center; }
+.macro-val { font-size: 1rem; font-weight: 700; color: var(--gold); }
+.macro-unit { font-size: 0.65rem; color: var(--muted); }
+.macro-name { font-size: 0.7rem; color: var(--muted); }
+.preview-actions { display: flex; gap: 0.5rem; }
+.preview-actions .btn { flex: 1; text-align: center; }
+
+/* MENU SECTION */
+#menu { background: var(--bg); }
+.menu-container { max-width: 1200px; margin: 0 auto; }
+.menu-tabs {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+  border-bottom: 1px solid rgba(200,152,58,0.15);
+  margin-bottom: 2.5rem; padding-bottom: 0;
+}
+.tab-btn {
+  padding: 0.5rem 1.25rem; background: transparent; border: none;
+  color: var(--muted); font-family: 'Vazirmatn', sans-serif; font-size: 0.9rem;
+  cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent;
+  margin-bottom: -1px; border-radius: 4px 4px 0 0;
+}
+.tab-btn:hover { color: var(--cream); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.menu-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;
+}
+.menu-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.1);
+  border-radius: 14px; padding: 1.25rem;
+  cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+}
+.menu-item::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(200,152,58,0.05), transparent);
+  opacity: 0; transition: opacity 0.2s;
+}
+.menu-item:hover { border-color: rgba(200,152,58,0.3); transform: translateY(-2px); }
+.menu-item:hover::before { opacity: 1; }
+.menu-item-emoji { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+.menu-item-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
+.menu-item-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+.menu-item-price {
+  margin-top: 0.75rem; font-size: 0.82rem; color: var(--gold); font-weight: 700;
+}
+.menu-panel { display: none; }
+.menu-panel.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+
+/* GAMIFICATION */
+#gamify {
+  background: var(--bg3);
+  border-top: 1px solid rgba(200,152,58,0.1);
+}
+.gamify-container { max-width: 1200px; margin: 0 auto; }
+.gamify-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+.level-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 20px; padding: 2rem;
+}
+.level-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.level-badge {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 900; color: var(--bg);
+  box-shadow: 0 0 20px rgba(200,152,58,0.4);
+}
+.level-info h3 { font-size: 1.2rem; font-weight: 900; }
+.level-info span { font-size: 0.8rem; color: var(--muted); }
+.xp-bar-track {
+  height: 12px; background: rgba(255,255,255,0.06); border-radius: 6px;
+  overflow: hidden; margin-bottom: 0.5rem;
+}
+.xp-bar-fill {
+  height: 100%; width: 68%; border-radius: 6px;
+  background: linear-gradient(90deg, var(--gold), var(--amber));
+  position: relative; overflow: hidden;
+}
+.xp-bar-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(200%); }
+}
+.xp-text { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); }
+.achievements-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1.5rem; }
+.ach-item {
+  background: rgba(255,255,255,0.04); border-radius: 12px; padding: 0.875rem;
+  text-align: center; border: 1px solid rgba(200,152,58,0.1);
+  transition: all 0.2s;
+}
+.ach-item.earned { border-color: rgba(200,152,58,0.4); background: rgba(200,152,58,0.06); }
+.ach-item:hover { transform: translateY(-2px); }
+.ach-icon { font-size: 1.75rem; display: block; margin-bottom: 0.4rem; }
+.ach-name { font-size: 0.7rem; font-weight: 700; color: var(--cream2); }
+.ach-locked { opacity: 0.35; }
+.challenges-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.challenge-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.12);
+  border-radius: 12px; padding: 1rem 1.25rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.challenge-icon { font-size: 1.5rem; flex-shrink: 0; }
+.challenge-info { flex: 1; }
+.challenge-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
+.challenge-desc { font-size: 0.75rem; color: var(--muted); }
+.challenge-reward {
+  background: rgba(200,152,58,0.1); border: 1px solid rgba(200,152,58,0.3);
+  border-radius: 100px; padding: 0.25rem 0.75rem;
+  font-size: 0.75rem; font-weight: 700; color: var(--gold); white-space: nowrap;
+}
+
+/* AI SECTION */
+#ai { background: var(--bg); }
+.ai-container { max-width: 900px; margin: 0 auto; text-align: center; }
+.ai-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 24px; padding: 2.5rem;
+  margin-top: 3rem;
+}
+.ai-chat { min-height: 240px; margin-bottom: 1.5rem; text-align: right; }
+.ai-msg {
+  display: flex; gap: 0.75rem; margin-bottom: 1rem; align-items: flex-start;
+}
+.ai-msg.user { flex-direction: row-reverse; }
+.ai-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.ai-bubble {
+  background: rgba(200,152,58,0.08); border: 1px solid rgba(200,152,58,0.15);
+  border-radius: 14px 14px 14px 4px;
+  padding: 0.875rem 1.125rem; max-width: 80%;
+  font-size: 0.9rem; line-height: 1.7; text-align: right;
+}
+.user-bubble {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px 14px 4px 14px;
+  padding: 0.875rem 1.125rem; max-width: 80%;
+  font-size: 0.9rem; line-height: 1.7; text-align: right;
+}
+.ai-input-row {
+  display: flex; gap: 0.75rem; align-items: center;
+}
+.ai-input {
+  flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(200,152,58,0.25);
+  border-radius: 100px; padding: 0.75rem 1.25rem;
+  color: var(--cream); font-family: 'Vazirmatn', sans-serif; font-size: 0.9rem;
+  outline: none; transition: border-color 0.2s;
+}
+.ai-input:focus { border-color: var(--gold); }
+.ai-input::placeholder { color: var(--muted); }
+.ai-typing { display: flex; gap: 4px; align-items: center; padding: 0.5rem 0; }
+.ai-typing span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
+  animation: typingDot 1.2s ease-in-out infinite;
+}
+.ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+.ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* AMBIENT */
+#ambient { background: var(--bg2); border-top: 1px solid rgba(200,152,58,0.1); }
+.ambient-container { max-width: 900px; margin: 0 auto; text-align: center; }
+.ambient-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+.ambient-item {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(200,152,58,0.12);
+  border-radius: 16px; padding: 1.5rem 1rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.ambient-item:hover { border-color: rgba(200,152,58,0.3); transform: translateY(-2px); }
+.ambient-item.playing { border-color: var(--gold); background: rgba(200,152,58,0.06); }
+.ambient-icon { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+.ambient-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
+.ambient-desc { font-size: 0.75rem; color: var(--muted); }
+.ambient-wave {
+  display: flex; justify-content: center; align-items: flex-end; gap: 3px;
+  height: 24px; margin-top: 0.75rem;
+}
+.wave-bar {
+  width: 4px; background: var(--gold); border-radius: 2px; opacity: 0;
+  transition: opacity 0.3s;
+}
+.ambient-item.playing .wave-bar {
+  opacity: 1; animation: waveDance 0.8s ease-in-out infinite alternate;
+}
+.wave-bar:nth-child(2) { animation-delay: 0.1s !important; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s !important; }
+.wave-bar:nth-child(4) { animation-delay: 0.15s !important; }
+.wave-bar:nth-child(5) { animation-delay: 0.05s !important; }
+@keyframes waveDance {
+  from { height: 4px; }
+  to { height: 20px; }
+}
+
+/* FOOTER */
+footer {
+  background: var(--bg); border-top: 1px solid rgba(200,152,58,0.1);
+  padding: 3rem 2rem;
+  text-align: center;
+}
+.footer-logo {
+  font-size: 1.75rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 0.75rem;
+}
+.footer-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 2rem; }
+.footer-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+.footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold); }
+.footer-copy { margin-top: 2rem; font-size: 0.75rem; color: rgba(122,96,64,0.6); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: rgba(26,16,8,0.95); border: 1px solid rgba(200,152,58,0.4);
+  border-radius: 100px; padding: 0.75rem 1.5rem;
+  font-size: 0.875rem; color: var(--cream); z-index: 999;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  backdrop-filter: blur(10px);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero-content { grid-template-columns: 1fr; text-align: center; }
+  .hero-visual { display: none; }
+  .builder-layout { grid-template-columns: 1fr; }
+  .preview-card { position: static; }
+  .gamify-layout { grid-template-columns: 1fr; }
+  .ambient-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav-links { display: none; }
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2); border: 1px solid rgba(200,152,58,0.25);
+  border-radius: 24px; padding: 2.5rem; max-width: 500px; width: 90%;
+  position: relative;
+}
+.modal-close {
+  position: absolute; top: 1.25rem; left: 1.25rem;
+  background: none; border: none; color: var(--muted);
+  font-size: 1.25rem; cursor: pointer; transition: color 0.2s;
+}
+.modal-close:hover { color: var(--cream); }
+.modal-title { font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem; }
+.modal-sub { font-size: 0.875rem; color: var(--muted); margin-bottom: 2rem; }
+.modal-flavor { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">☕ CoffeeCraft</div>
+  <ul class="nav-links">
+    <li><a href="#builder">ساخت نوشیدنی</a></li>
+    <li><a href="#menu">منو</a></li>
+    <li><a href="#gamify">جوایز</a></li>
+    <li><a href="#ai">باریستای AI</a></li>
+    <li><a href="#ambient">محیط</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn btn-ghost" onclick="showToast('🪙 موجودی: ۴۲۰ Coffee Coin')">🪙 ۴۲۰</button>
+    <button class="btn btn-primary" onclick="showToast('خوش آمدی! ☕')">ورود</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-text">
+      <p class="section-label">کافه‌ات، قوانین‌ات</p>
+      <h1>نوشیدنی <span>رویاهات</span> را بساز</h1>
+      <p>با بیش از ۵۰۰ ماده، سیستم هوش مصنوعی، و جامعه‌ای از دوستداران قهوه — هر فنجان یک شاهکار است.</p>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-lg" onclick="scrollToSection('builder')">شروع ساخت ☕</button>
+        <button class="btn btn-ghost btn-lg" onclick="scrollToSection('menu')">مشاهده منو</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item"><span class="stat-num">۵۰۰+</span><span class="stat-label">ماده اولیه</span></div>
+        <div class="stat-item"><span class="stat-num">۱۲K</span><span class="stat-label">دستور ذخیره‌شده</span></div>
+        <div class="stat-item"><span class="stat-num">۹۸</span><span class="stat-label">امتیاز میانگین</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="cup-scene">
+        <div class="cup-glow"></div>
+        <svg class="cup-svg" viewBox="0 0 300 380" fill="none">
+          <!-- Steam -->
+          <path class="steam-path" d="M120 80 Q110 60 120 40 Q130 20 120 5" stroke="rgba(245,237,214,0.4)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path class="steam-path" d="M150 75 Q140 55 150 35 Q160 15 150 0" stroke="rgba(245,237,214,0.3)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path class="steam-path" d="M180 80 Q190 60 180 40 Q170 20 180 5" stroke="rgba(245,237,214,0.4)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <!-- Saucer -->
+          <ellipse cx="150" cy="320" rx="110" ry="18" fill="#2A1A0C"/>
+          <ellipse cx="150" cy="318" rx="100" ry="14" fill="#3D2510"/>
+          <!-- Cup body -->
+          <path d="M80 130 Q70 280 90 300 Q150 320 210 300 Q230 280 220 130 Z" fill="#2A1A0C"/>
+          <path d="M85 130 Q75 275 93 296 Q150 315 207 296 Q225 275 215 130 Z" fill="#3A2010"/>
+          <!-- Liquid -->
+          <ellipse cx="150" cy="150" rx="60" ry="15" fill="#6B3A1F" class="liquid-fill"/>
+          <path d="M90 155 Q150 170 210 155 Q205 220 200 260 Q150 275 100 260 Q95 220 90 155Z" fill="#4A2510"/>
+          <path d="M90 155 Q150 142 210 155 L210 165 Q150 150 90 165Z" fill="#8B5230" opacity="0.8"/>
+          <!-- Cup rim -->
+          <ellipse cx="150" cy="130" rx="70" ry="18" fill="#3A2010"/>
+          <ellipse cx="150" cy="128" rx="68" ry="16" fill="#4A2A12"/>
+          <!-- Handle -->
+          <path d="M215 175 Q260 175 260 220 Q260 265 215 265" stroke="#3A2010" stroke-width="20" stroke-linecap="round" fill="none"/>
+          <path d="M215 175 Q255 175 255 220 Q255 265 215 265" stroke="#4A2A12" stroke-width="14" stroke-linecap="round" fill="none"/>
+          <!-- Foam art -->
+          <path d="M115 148 Q150 135 185 148 Q165 162 150 158 Q135 162 115 148Z" fill="rgba(245,220,180,0.25)"/>
+          <ellipse cx="150" cy="150" rx="18" ry="8" fill="rgba(245,220,180,0.15)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUILDER -->
+<section id="builder">
+  <div class="builder-container">
+    <div class="section-header">
+      <p class="section-label">سیستم ساخت حرفه‌ای</p>
+      <h2 class="section-title">نوشیدنی خودت را طراحی کن</h2>
+      <p class="section-sub">هر مرحله را شخصی‌سازی کن. باریستای AI ترکیب‌های ناسازگار را هشدار می‌دهد.</p>
+    </div>
+    <div class="builder-layout">
+      <div class="builder-steps">
+        <!-- Step 1: Base -->
+        <div class="step-card">
+          <div class="step-header"><div class="step-num">۱</div><span class="step-title">پایه نوشیدنی</span></div>
+          <div class="options-grid" id="base-opts">
+            <button class="opt-btn selected" onclick="selectOpt(this,'base','قهوه')">☕ قهوه</button>
+            <button class="opt-btn" onclick="selectOpt(this,'base','چای')">🍵 چای</button>
+            <button class="opt-btn" onclick="selectOpt(this,'base','شکلات')">🍫 شکلات</button>
+            <button class="opt-btn" onclick="selectOpt(this,'base','شیر')">🥛 شیر</button>
+            <button class="opt-btn" onclick="selectOpt(this,'base','آبمیوه')">🧃 آبمیوه</button>
+          </div>
+        </div>
+        <!-- Step 2: Milk -->
+        <div class="step-card">
+          <div class="step-header"><div class="step-num">۲</div><span class="step-title">نوع شیر</span></div>
+          <div class="options-grid" id="milk-opts">
+            <button class="opt-btn selected" onclick="selectOpt(this,'milk','کامل')">🥛 کامل</button>
+            <button class="opt-btn" onclick="selectOpt(this,'milk','کم‌چرب')">💧 کم‌چرب</button>
+            <button class="opt-btn" onclick="selectOpt(this,'milk','بادام')">🌰 بادام</button>
+            <button class="opt-btn" onclick="selectOpt(this,'milk','جو دوسر')">🌾 جو دوسر</button>
+            <button class="opt-btn" onclick="selectOpt(this,'milk','نارگیل')">🥥 نارگیل</button>
+            <button class="opt-btn" onclick="selectOpt(this,'milk','سویا')">🫘 سویا</button>
+          </div>
+        </div>
+        <!-- Step 3: Syrup -->
+        <div class="step-card">
+          <div class="step-header"><div class="step-num">۳</div><span class="step-title">سیروپ</span></div>
+          <div class="options-grid" id="syrup-opts">
+            <button class="opt-btn" onclick="toggleOpt(this,'syrup','وانیل')">🍦 وانیل</button>
+            <button class="opt-btn selected" onclick="toggleOpt(this,'syrup','کارامل')">🍮 کارامل</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'syrup','فندق')">🌰 فندق</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'syrup','نارگیل')">🥥 نارگیل</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'syrup','پسته')">🟢 پسته</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'syrup','دارچین')">🟤 دارچین</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'syrup','نعناع')">🌿 نعناع</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'syrup','توفی')">🍬 توفی</button>
+          </div>
+        </div>
+        <!-- Step 4: Topping -->
+        <div class="step-card">
+          <div class="step-header"><div class="step-num">۴</div><span class="step-title">تاپینگ</span></div>
+          <div class="options-grid" id="top-opts">
+            <button class="opt-btn selected" onclick="toggleOpt(this,'top','خامه')">🍦 خامه</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'top','پودر کاکائو')">🍫 پودر کاکائو</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'top','پسته')">🟢 پسته</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'top','مارشمالو')">🤍 مارشمالو</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'top','دارچین')">🟤 دارچین</button>
+            <button class="opt-btn" onclick="toggleOpt(this,'top','کوکی')">🍪 کوکی</button>
+          </div>
+        </div>
+        <!-- Step 5: Customize -->
+        <div class="step-card">
+          <div class="step-header"><div class="step-num">۵</div><span class="step-title">شخصی‌سازی</span></div>
+          <div>
+            <div class="slider-row">
+              <span class="slider-label">قند</span>
+              <input type="range" min="0" max="100" value="40" oninput="updateSlider(this,'sweetness')">
+              <span class="slider-val" id="sweetness-val">۴۰</span>
+            </div>
+            <div class="slider-row">
+              <span class="slider-label">شدت قهوه</span>
+              <input type="range" min="0" max="100" value="70" oninput="updateSlider(this,'strength')">
+              <span class="slider-val" id="strength-val">۷۰</span>
+            </div>
+            <div class="slider-row">
+              <span class="slider-label">یخ</span>
+              <input type="range" min="0" max="100" value="0" oninput="updateSlider(this,'ice')">
+              <span class="slider-val" id="ice-val">۰</span>
+            </div>
+            <div class="slider-row">
+              <span class="slider-label">فوم</span>
+              <input type="range" min="0" max="100" value="50" oninput="updateSlider(this,'foam')">
+              <span class="slider-val" id="foam-val">۵۰</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW -->
+      <div class="preview-card">
+        <p class="preview-title">پیش‌نمایش نوشیدنی</p>
+        <div class="preview-cup">
+          <svg class="preview-cup-svg" viewBox="0 0 120 130" fill="none">
+            <ellipse cx="60" cy="118" rx="42" ry="7" fill="#2A1A0C"/>
+            <path d="M28 42 Q22 100 30 112 Q60 122 90 112 Q98 100 92 42Z" fill="#3A2010"/>
+            <path d="M32 42 Q27 96 34 110 Q60 119 86 110 Q93 96 88 42Z" fill="#4A2810" id="prev-cup"/>
+            <ellipse cx="60" cy="42" rx="30" ry="9" fill="#3A2010"/>
+            <ellipse cx="60" cy="40" rx="28" ry="7.5" fill="#4A2A12"/>
+            <ellipse cx="60" cy="52" rx="22" ry="6" fill="#6B3A1F" opacity="0.8"/>
+            <path d="M88 60 Q108 60 108 80 Q108 100 88 100" stroke="#3A2010" stroke-width="8" stroke-linecap="round" fill="none"/>
+            <path class="steam-path" d="M48 32 Q44 22 48 14 Q52 6 48 0" stroke="rgba(245,237,214,0.5)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path class="steam-path" d="M60 30 Q56 20 60 12 Q64 4 60 0" stroke="rgba(245,237,214,0.35)" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <path class="steam-path" d="M72 32 Q76 22 72 14 Q68 6 72 0" stroke="rgba(245,237,214,0.5)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="preview-name" id="prev-name">کارامل لاته خاص</div>
+        <div class="preview-desc" id="prev-desc">قهوه · شیر کامل · کارامل · خامه</div>
+
+        <div class="preview-bars">
+          <div class="bar-row"><div class="bar-top"><span class="bar-name">☕ تلخی</span><span class="bar-val" id="bitter-val">۳۵</span></div><div class="bar-track"><div class="bar-fill" id="bitter-bar" style="width:35%"></div></div></div>
+          <div class="bar-row"><div class="bar-top"><span class="bar-name">🍬 شیرینی</span><span class="bar-val" id="sweet-display">۴۰</span></div><div class="bar-track"><div class="bar-fill" id="sweet-bar" style="width:40%"></div></div></div>
+          <div class="bar-row"><div class="bar-top"><span class="bar-name">⚡ کافئین</span><span class="bar-val">۶۵</span></div><div class="bar-track"><div class="bar-fill" style="width:65%"></div></div></div>
+          <div class="bar-row"><div class="bar-top"><span class="bar-name">🌊 غلظت</span><span class="bar-val" id="strength-display">۷۰</span></div><div class="bar-track"><div class="bar-fill" id="strength-bar" style="width:70%"></div></div></div>
+        </div>
+
+        <div class="preview-macros">
+          <div class="macro-item"><div class="macro-val">۲۴۰</div><div class="macro-unit">kcal</div><div class="macro-name">کالری</div></div>
+          <div class="macro-item"><div class="macro-val">۸g</div><div class="macro-unit"></div><div class="macro-name">پروتئین</div></div>
+          <div class="macro-item"><div class="macro-val">۳۲g</div><div class="macro-unit"></div><div class="macro-name">کربوهیدرات</div></div>
+        </div>
+
+        <div class="preview-actions">
+          <button class="btn btn-primary" onclick="saveDrink()">💾 ذخیره</button>
+          <button class="btn btn-ghost" onclick="shareDrink()">🔗 اشتراک</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="menu-container">
+    <div class="section-header">
+      <p class="section-label">منوی کامل</p>
+      <h2 class="section-title">همه چیز در یک نگاه</h2>
+    </div>
+    <div class="menu-tabs">
+      <button class="tab-btn active" onclick="showTab('hot')">☕ نوشیدنی گرم</button>
+      <button class="tab-btn" onclick="showTab('cold')">🧊 نوشیدنی سرد</button>
+      <button class="tab-btn" onclick="showTab('dessert')">🍰 دسر</button>
+      <button class="tab-btn" onclick="showTab('food')">🥪 غذا</button>
+    </div>
+
+    <div id="tab-hot" class="menu-panel active">
+      <div class="menu-item" onclick="openItem('اسپرسو','تک‌شات قهوه غلیظ با ارومای دودی','نوشیدنی کلاسیک ایتالیایی')"><span class="menu-item-emoji">☕</span><div class="menu-item-name">اسپرسو</div><div class="menu-item-desc">تک‌شات غلیظ با ارومای دودی</div><div class="menu-item-price">۴۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('لاته','قهوه با شیر بخارپز و فوم لطیف','محبوب‌ترین نوشیدنی کافه')"><span class="menu-item-emoji">🥛</span><div class="menu-item-name">لاته</div><div class="menu-item-desc">اسپرسو + شیر بخارپز + فوم</div><div class="menu-item-price">۶۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('کاپوچینو','تعادل بی‌نظیر اسپرسو و فوم','کلاسیک برای صبح')"><span class="menu-item-emoji">☕</span><div class="menu-item-name">کاپوچینو</div><div class="menu-item-desc">اسپرسو + فوم غلیظ + پودر کاکائو</div><div class="menu-item-price">۶۰,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('موکا','ترکیب قهوه و شکلات','عاشقانه‌ترین نوشیدنی')"><span class="menu-item-emoji">🍫</span><div class="menu-item-name">موکا</div><div class="menu-item-desc">اسپرسو + شکلات + شیر بخارپز</div><div class="menu-item-price">۷۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('وانیلا لاته','لاته با سیروپ وانیل اصل','شیرین و دلنشین')"><span class="menu-item-emoji">🍦</span><div class="menu-item-name">وانیلا لاته</div><div class="menu-item-desc">لاته + سیروپ وانیل + خامه</div><div class="menu-item-price">۷۸,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('فلت وایت','اسپرسو دبل با مایکرو‌فوم','قوی و بی‌پرده')"><span class="menu-item-emoji">☕</span><div class="menu-item-name">فلت وایت</div><div class="menu-item-desc">دبل اسپرسو + مایکروفوم</div><div class="menu-item-price">۷۰,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('V60','دم‌آوری دستی با تکنیک ریختن','برای قهوه‌شناسان')"><span class="menu-item-emoji">🫗</span><div class="menu-item-name">V60</div><div class="menu-item-desc">دم‌آوری دستی · Pour Over</div><div class="menu-item-price">۸۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('سایفون','دم‌آوری تئاتری با حرارت','تجربه‌ای بصری')"><span class="menu-item-emoji">⚗️</span><div class="menu-item-name">سایفون</div><div class="menu-item-desc">دم‌آوری خلاء · طعم بی‌نظیر</div><div class="menu-item-price">۱۱۰,۰۰۰ ت</div></div>
+    </div>
+
+    <div id="tab-cold" class="menu-panel">
+      <div class="menu-item" onclick="openItem('کولد برو','دم‌آوری سرد ۲۴ ساعته','نرم و کم‌تلخ')"><span class="menu-item-emoji">🧊</span><div class="menu-item-name">کولد برو</div><div class="menu-item-desc">دم‌آوری سرد ۲۴ ساعت</div><div class="menu-item-price">۷۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('نیترو کولد برو','کولد برو با نیتروژن','کرمی و حبابی')"><span class="menu-item-emoji">💨</span><div class="menu-item-name">نیترو کولد برو</div><div class="menu-item-desc">کولد برو + نیتروژن · کرمی</div><div class="menu-item-price">۹۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('فراپه','نوشیدنی سرد مخلوط با یخ','تابستانی و خوش‌طعم')"><span class="menu-item-emoji">🥤</span><div class="menu-item-name">فراپه</div><div class="menu-item-desc">قهوه + یخ + شیر + فوم</div><div class="menu-item-price">۸۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('موهیتو','نوشیدنی تازه با نعناع و لیمو','تابستانی اصیل')"><span class="menu-item-emoji">🍃</span><div class="menu-item-name">موهیتو</div><div class="menu-item-desc">نعناع + لیمو + آب گازدار</div><div class="menu-item-price">۶۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('آیس ماچا','ماچا با شیر سرد','ژاپنی و خاص')"><span class="menu-item-emoji">🍵</span><div class="menu-item-name">آیس ماچا</div><div class="menu-item-desc">ماچا ژاپنی + شیر سرد</div><div class="menu-item-price">۸۰,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('میلک‌شیک موز','شیک غلیظ موز','بچه‌پسند')"><span class="menu-item-emoji">🍌</span><div class="menu-item-name">میلک‌شیک موز</div><div class="menu-item-desc">موز + شیر + بستنی وانیل</div><div class="menu-item-price">۷۰,۰۰۰ ت</div></div>
+    </div>
+
+    <div id="tab-dessert" class="menu-panel">
+      <div class="menu-item" onclick="openItem('تیرامیسو','دسر کلاسیک ایتالیایی','قهوه + پنیر ماسکارپونه')"><span class="menu-item-emoji">🍰</span><div class="menu-item-name">تیرامیسو</div><div class="menu-item-desc">ماسکارپونه + اسپرسو + ساووی</div><div class="menu-item-price">۸۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('چیزکیک','چیزکیک نیویورکی','کلاسیک امریکایی')"><span class="menu-item-emoji">🧁</span><div class="menu-item-name">چیزکیک</div><div class="menu-item-desc">پنیر خامه‌ای + کراکر + توت</div><div class="menu-item-price">۷۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('براونی','براونی شکلاتی گرم','همراه بستنی')"><span class="menu-item-emoji">🍫</span><div class="menu-item-name">براونی</div><div class="menu-item-desc">شکلات + گردو + بستنی وانیل</div><div class="menu-item-price">۶۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('وافل','وافل با خامه و سیروپ','بلژیکی اصیل')"><span class="menu-item-emoji">🧇</span><div class="menu-item-name">وافل</div><div class="menu-item-desc">وافل بلژیکی + خامه + سیروپ</div><div class="menu-item-price">۷۰,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('کرم بروله','دسر فرانسوی با کاراملیزه','رستورانی')"><span class="menu-item-emoji">🔥</span><div class="menu-item-name">کرم بروله</div><div class="menu-item-desc">کاستارد وانیل + کارامل سوخته</div><div class="menu-item-price">۹۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('آفوگاتو','اسپرسو روی بستنی','ساده و لوکس')"><span class="menu-item-emoji">☕</span><div class="menu-item-name">آفوگاتو</div><div class="menu-item-desc">اسپرسو + بستنی وانیل</div><div class="menu-item-price">۸۰,۰۰۰ ت</div></div>
+    </div>
+
+    <div id="tab-food" class="menu-panel">
+      <div class="menu-item" onclick="openItem('تست آووکادو','نان برشته با آووکادو','سالم و شیک')"><span class="menu-item-emoji">🥑</span><div class="menu-item-name">تست آووکادو</div><div class="menu-item-desc">نان سورداف + آووکادو + تخم‌مرغ</div><div class="menu-item-price">۱۲۰,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('پنینی مرغ','ساندویچ گرم ایتالیایی','پر از پروتئین')"><span class="menu-item-emoji">🥪</span><div class="menu-item-name">پنینی مرغ</div><div class="menu-item-desc">مرغ گریل + پنیر + سبزیجات</div><div class="menu-item-price">۱۴۵,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('سالاد سزار','کلاسیک رستورانی','تازه و مقوی')"><span class="menu-item-emoji">🥗</span><div class="menu-item-name">سالاد سزار</div><div class="menu-item-desc">رومین + پارمزان + کروتون</div><div class="menu-item-price">۱۱۰,۰۰۰ ت</div></div>
+      <div class="menu-item" onclick="openItem('کروسان ژامبون','کروسان با ژامبون و پنیر','صبحانه لوکس')"><span class="menu-item-emoji">🥐</span><div class="menu-item-name">کروسان ژامبون</div><div class="menu-item-desc">کروسان تازه + ژامبون + پنیر</div><div class="menu-item-price">۱۳۰,۰۰۰ ت</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- GAMIFICATION -->
+<section id="gamify">
+  <div class="gamify-container">
+    <div class="section-header">
+      <p class="section-label">سیستم جوایز</p>
+      <h2 class="section-title">هر قهوه، یک قدم بالاتر</h2>
+      <p class="section-sub">امتیاز کسب کن، نشان‌ها باز کن، و با باریستاهای دیگر رقابت کن.</p>
+    </div>
+    <div class="gamify-layout">
+      <div>
+        <div class="level-card" style="margin-bottom:1.5rem;">
+          <div class="level-header">
+            <div class="level-badge">۷</div>
+            <div class="level-info">
+              <h3>باریستای حرفه‌ای</h3>
+              <span>۶,۸۰۰ / ۱۰,۰۰۰ XP تا سطح ۸</span>
+            </div>
+          </div>
+          <div class="xp-bar-track"><div class="xp-bar-fill"></div></div>
+          <div class="xp-text"><span>۶,۸۰۰ XP</span><span>۱۰,۰۰۰ XP</span></div>
+          <div class="achievements-grid">
+            <div class="ach-item earned"><span class="ach-icon">☕</span><span class="ach-name">اولین قهوه</span></div>
+            <div class="ach-item earned"><span class="ach-icon">🔥</span><span class="ach-name">۷ روز پشت سر هم</span></div>
+            <div class="ach-item earned"><span class="ach-icon">🎨</span><span class="ach-name">طراح خلاق</span></div>
+            <div class="ach-item earned"><span class="ach-icon">⭐</span><span class="ach-name">۱۰۰ لایک</span></div>
+            <div class="ach-item ach-locked"><span class="ach-icon">🏆</span><span class="ach-name">قهرمان هفته</span></div>
+            <div class="ach-item ach-locked"><span class="ach-icon">🌟</span><span class="ach-name">افسانه‌ای</span></div>
+          </div>
+        </div>
+        <div class="level-card">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">🪙 موجودی Coffee Coins</h3>
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+            <span style="font-size:2.5rem;font-weight:900;color:var(--gold);">۴۲۰</span>
+            <div style="font-size:0.8rem;color:var(--muted);line-height:1.6;">هر دستور ذخیره‌شده = +۱۰ سکه<br>هر لایک = +۲ سکه</div>
+          </div>
+          <button class="btn btn-primary" onclick="showToast('🛒 فروشگاه به زودی باز می‌شود!')">🛍️ فروشگاه آیتم‌های تزئینی</button>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">⚡ چالش‌های روزانه</h3>
+        <div class="challenges-list">
+          <div class="challenge-item">
+            <span class="challenge-icon">🎨</span>
+            <div class="challenge-info">
+              <div class="challenge-name">خالق خلاق</div>
+              <div class="challenge-desc">یک نوشیدنی با ۵+ ماده بساز</div>
+            </div>
+            <div class="challenge-reward">+۵۰ XP</div>
+          </div>
+          <div class="challenge-item">
+            <span class="challenge-icon">🌿</span>
+            <div class="challenge-info">
+              <div class="challenge-name">وگان چلنج</div>
+              <div class="challenge-desc">از شیر گیاهی استفاده کن</div>
+            </div>
+            <div class="challenge-reward">+۳۰ XP</div>
+          </div>
+          <div class="challenge-item">
+            <span class="challenge-icon">⭐</span>
+            <div class="challenge-info">
+              <div class="challenge-name">اشتراک‌گذار</div>
+              <div class="challenge-desc">دستور خودت را با دیگران شیر کن</div>
+            </div>
+            <div class="challenge-reward">+۲۰ XP</div>
+          </div>
+          <div class="challenge-item">
+            <span class="challenge-icon">🏅</span>
+            <div class="challenge-info">
+              <div class="challenge-name">رتبه اول هفتگی</div>
+              <div class="challenge-desc">بیشترین لایک هفته را بگیر</div>
+            </div>
+            <div class="challenge-reward">+۲۰۰ XP</div>
+          </div>
+          <div class="challenge-item">
+            <span class="challenge-icon">🌙</span>
+            <div class="challenge-info">
+              <div class="challenge-name">شب‌باز</div>
+              <div class="challenge-desc">بعد از ساعت ۱۰ شب لاگین کن</div>
+            </div>
+            <div class="challenge-reward">+۱۵ XP</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI BARISTA -->
+<section id="ai">
+  <div class="ai-container">
+    <p class="section-label">هوش مصنوعی</p>
+    <h2 class="section-title">باریستای AI در خدمت توست</h2>
+    <p class="section-sub" style="margin:0 auto 0;text-align:center;">از پیشنهاد ترکیب تا هشدار ناسازگاری — AI همیشه کنارته.</p>
+    <div class="ai-box">
+      <div class="ai-chat" id="ai-chat">
+        <div class="ai-msg">
+          <div class="ai-avatar">🤖</div>
+          <div class="ai-bubble">سلام! من باریستای AI هستم. می‌تونم نوشیدنی پیشنهاد بدم، طعم توضیح بدم، یا ترکیب‌های جدید بسازم. چی می‌خوای؟ ☕</div>
+        </div>
+      </div>
+      <div class="ai-input-row">
+        <button class="btn btn-ghost" onclick="quickAsk('یه نوشیدنی برای پاییز پیشنهاد بده')">🍂 پاییزی</button>
+        <button class="btn btn-ghost" onclick="quickAsk('کم‌کافئین می‌خوام')">😴 کم کافئین</button>
+        <input class="ai-input" id="ai-input" placeholder="بپرس چی می‌خوای..." onkeydown="if(event.key==='Enter')sendAI()">
+        <button class="btn btn-primary" onclick="sendAI()">ارسال</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AMBIENT -->
+<section id="ambient">
+  <div class="ambient-container">
+    <p class="section-label">محیط کافه</p>
+    <h2 class="section-title">صدای کافه‌ات را انتخاب کن</h2>
+    <p class="section-sub" style="margin:0 auto;text-align:center;">با صداهای محیطی، تجربه واقعی کافه را داشته باش.</p>
+    <div class="ambient-grid">
+      <div class="ambient-item" onclick="toggleAmbient(this)">
+        <span class="ambient-icon">🌧️</span>
+        <div class="ambient-name">باران</div>
+        <div class="ambient-desc">صدای آرامش‌بخش باران</div>
+        <div class="ambient-wave"><div class="wave-bar" style="height:8px"></div><div class="wave-bar" style="height:14px"></div><div class="wave-bar" style="height:10px"></div><div class="wave-bar" style="height:16px"></div><div class="wave-bar" style="height:6px"></div></div>
+      </div>
+      <div class="ambient-item playing" onclick="toggleAmbient(this)">
+        <span class="ambient-icon">☕</span>
+        <div class="ambient-name">کافه</div>
+        <div class="ambient-desc">همهمه و صدای فنجان‌ها</div>
+        <div class="ambient-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+      </div>
+      <div class="ambient-item" onclick="toggleAmbient(this)">
+        <span class="ambient-icon">🎷</span>
+        <div class="ambient-name">جاز</div>
+        <div class="ambient-desc">موسیقی جاز دلنشین</div>
+        <div class="ambient-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+      </div>
+      <div class="ambient-item" onclick="toggleAmbient(this)">
+        <span class="ambient-icon">🎵</span>
+        <div class="ambient-name">لوفای</div>
+        <div class="ambient-desc">بیت‌های آرام و تکراری</div>
+        <div class="ambient-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+      </div>
+      <div class="ambient-item" onclick="toggleAmbient(this)">
+        <span class="ambient-icon">🎹</span>
+        <div class="ambient-name">کلاسیک</div>
+        <div class="ambient-desc">موسیقی کلاسیک اروپایی</div>
+        <div class="ambient-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+      </div>
+      <div class="ambient-item" onclick="toggleAmbient(this)">
+        <span class="ambient-icon">💨</span>
+        <div class="ambient-name">اسپرسوساز</div>
+        <div class="ambient-desc">صدای بخار و ماشین قهوه</div>
+        <div class="ambient-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">☕ CoffeeCraft</div>
+  <p class="footer-sub">قهوه‌ات، قوانین‌ات. هر فنجان یک داستان.</p>
+  <div class="footer-links">
+    <a href="#">درباره ما</a>
+    <a href="#">راهنما</a>
+    <a href="#">API</a>
+    <a href="#">حریم خصوصی</a>
+    <a href="#">تماس</a>
+    <a href="#">GitHub</a>
+  </div>
+  <div class="footer-copy">ساخته شده با ❤️ و ☕ — CoffeeCraft 2024</div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ITEM MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="font-size:3rem;margin-bottom:0.75rem;" id="modal-emoji">☕</div>
+    <div class="modal-title" id="modal-title">عنوان</div>
+    <div class="modal-sub" id="modal-sub">توضیحات</div>
+    <div class="modal-flavor">
+      <div class="bar-row"><div class="bar-top"><span class="bar-name">☕ تلخی</span><span class="bar-val" id="m-bitter">۶۰</span></div><div class="bar-track"><div class="bar-fill" id="m-bitter-bar" style="width:60%"></div></div></div>
+      <div class="bar-row"><div class="bar-top"><span class="bar-name">🍬 شیرینی</span><span class="bar-val" id="m-sweet">۳۰</span></div><div class="bar-track"><div class="bar-fill" id="m-sweet-bar" style="width:30%"></div></div></div>
+      <div class="bar-row"><div class="bar-top"><span class="bar-name">⚡ کافئین</span><span class="bar-val" id="m-caff">۸۰</span></div><div class="bar-track"><div class="bar-fill" id="m-caff-bar" style="width:80%"></div></div></div>
+    </div>
+    <div style="display:flex;gap:0.75rem;">
+      <button class="btn btn-primary" style="flex:1" onclick="closeModal();showToast('به سبد اضافه شد! 🛒')">افزودن به سبد</button>
+      <button class="btn btn-ghost" onclick="closeModal();scrollToSection('builder')">شخصی‌سازی</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// State
+const state = { base:'قهوه', milk:'کامل', syrups:['کارامل'], toppings:['خامه'], sweetness:40, strength:70, ice:0, foam:50 };
+
+function selectOpt(btn, key, val) {
+  const container = btn.closest('.options-grid');
+  container.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state[key] = val;
+  updatePreview();
+}
+
+function toggleOpt(btn, key, val) {
+  const arr = key === 'syrup' ? state.syrups : state.toppings;
+  btn.classList.toggle('selected');
+  if (btn.classList.contains('selected')) { if (!arr.includes(val)) arr.push(val); }
+  else { const i = arr.indexOf(val); if (i > -1) arr.splice(i,1); }
+  updatePreview();
+}
+
+function updateSlider(el, key) {
+  state[key] = parseInt(el.value);
+  const display = document.getElementById(key === 'sweetness' ? 'sweetness-val' : key === 'strength' ? 'strength-val' : key === 'ice' ? 'ice-val' : 'foam-val');
+  if (display) display.textContent = el.value;
+  if (key === 'sweetness') { document.getElementById('sweet-display').textContent = el.value; document.getElementById('sweet-bar').style.width = el.value + '%'; }
+  if (key === 'strength') { document.getElementById('strength-display').textContent = el.value; document.getElementById('strength-bar').style.width = el.value + '%'; }
+  updatePreview();
+}
+
+function updatePreview() {
+  const bitter = Math.max(0, Math.min(100, 100 - state.sweetness * 0.3 + state.strength * 0.4));
+  document.getElementById('bitter-val').textContent = Math.round(bitter);
+  document.getElementById('bitter-bar').style.width = bitter + '%';
+  document.getElementById('sweet-display').textContent = state.sweetness;
+  document.getElementById('sweet-bar').style.width = state.sweetness + '%';
+  const desc = [state.base, state.milk, ...state.syrups, ...state.toppings].slice(0,4).join(' · ');
+  document.getElementById('prev-desc').textContent = desc;
+  const names = { 'قهوه+کارامل':'کارامل لاته', 'قهوه+وانیل':'وانیلا لاته', 'شکلات':'موکا', 'چای+فندق':'فندق چای', 'قهوه':'لاته کلاسیک' };
+  const nameKey = state.base + (state.syrups[0] ? '+' + state.syrups[0] : '');
+  document.getElementById('prev-name').textContent = names[nameKey] || 'نوشیدنی سفارشی';
+  const prevCup = document.getElementById('prev-cup');
+  const colors = { 'قهوه':'#4A2810', 'چای':'#3D5A3E', 'شکلات':'#3A1A0A', 'شیر':'#6B5040', 'آبمیوه':'#4A3A1A' };
+  if (prevCup) prevCup.setAttribute('fill', colors[state.base] || '#4A2810');
+}
+
+// TABS
+function showTab(tab) {
+  document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// SCROLL
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+// TOAST
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// SAVE/SHARE
+function saveDrink() { showToast('✅ دستور ذخیره شد! +۱۰ Coffee Coin'); }
+function shareDrink() {
+  navigator.clipboard?.writeText(window.location.href + '#builder');
+  showToast('🔗 لینک کپی شد!');
+}
+
+// MODAL
+function openItem(name, desc, detail) {
+  document.getElementById('modal-title').textContent = name;
+  document.getElementById('modal-sub').textContent = desc + ' — ' + detail;
+  const b = Math.floor(Math.random()*40)+30;
+  const s = Math.floor(Math.random()*50)+20;
+  const c = Math.floor(Math.random()*50)+40;
+  document.getElementById('m-bitter').textContent = b;
+  document.getElementById('m-bitter-bar').style.width = b + '%';
+  document.getElementById('m-sweet').textContent = s;
+  document.getElementById('m-sweet-bar').style.width = s + '%';
+  document.getElementById('m-caff').textContent = c;
+  document.getElementById('m-caff-bar').style.width = c + '%';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+// AMBIENT
+function toggleAmbient(el) {
+  const wasPlaying = el.classList.contains('playing');
+  document.querySelectorAll('.ambient-item').forEach(i => i.classList.remove('playing'));
+  if (!wasPlaying) { el.classList.add('playing'); showToast('🎵 ' + el.querySelector('.ambient-name').textContent + ' پخش می‌شود...'); }
+}
+
+// AI
+const aiResponses = {
+  'پاییز': '🍂 برای پاییز پیشنهاد می‌کنم یه **لاته دارچین با شیر بادام**! ترکیب گرمای دارچین با شیر بادام حس پاییزی دلنشینی میده. میشه کمی سیروپ افرا هم اضافه کرد. 🍁',
+  'کم کافئین': '😴 برای کمتر کافئین، **چای ماسالا با شیر نارگیل** عالیه! یا اگه قهوه دوست داری، یه **هاف‌کاف لاته** (نصف دکاف) گزینه خوبیه. کافئینش فقط ۴۰mg خواهد بود.',
+  'پیشنهاد': '✨ بر اساس ترکیباتی که قبلاً انتخاب کردی، فکر می‌کنم عاشق یه **موکای وانیل با خامه نارگیل** می‌شی! شیرینی وانیل با تلخی قهوه و نارگیل... ترکیب بی‌نظیریه 🌴☕',
+  'default': '🤖 جالبه! بذار فکر کنم... بر اساس این درخواست، پیشنهاد می‌کنم یه ترکیب سفارشی با پایه قهوه + سیروپ فندق + شیر جو دوسر + خامه امتحان کنی. طعمی خاص و منحصربه‌فرد! ✨'
+};
+
+function sendAI() {
+  const input = document.getElementById('ai-input');
+  const text = input.value.trim();
+  if (!text) return;
+  addMessage(text, 'user');
+  input.value = '';
+  const chat = document.getElementById('ai-chat');
+  const typing = document.createElement('div');
+  typing.className = 'ai-msg'; typing.id = 'typing-indicator';
+  typing.innerHTML = '<div class="ai-avatar">🤖</div><div class="ai-bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div>';
+  chat.appendChild(typing); chat.scrollTop = chat.scrollHeight;
+  setTimeout(() => {
+    typing.remove();
+    let resp = aiResponses.default;
+    for (const [k, v] of Object.entries(aiResponses)) { if (k !== 'default' && text.includes(k)) { resp = v; break; } }
+    addMessage(resp, 'ai');
+  }, 1500);
+}
+
+function quickAsk(q) { document.getElementById('ai-input').value = q; sendAI(); }
+
+function addMessage(text, role) {
+  const chat = document.getElementById('ai-chat');
+  const div = document.createElement('div');
+  div.className = 'ai-msg' + (role === 'user' ? ' user' : '');
+  div.innerHTML = role === 'ai'
+    ? `<div class="ai-avatar">🤖</div><div class="ai-bubble">${text}</div>`
+    : `<div class="user-avatar">👤</div><div class="user-bubble">${text}</div>`;
+  chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
+}
+
+// INIT
+updatePreview();
+</script>
+</body>
+</html>
