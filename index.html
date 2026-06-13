@@ -1,1 +1,403 @@
 
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee OS | The Ultimate Coffee Experience</title>
+    <style>
+        /* ================= Theme System ================= */
+        :root {
+            --bg-color: #f4e4c1; /* Latte Base */
+            --text-color: #3e2723;
+            --window-bg: #ffffff;
+            --accent-color: #8b5a2b;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --border-radius: 12px;
+            --desktop-bg: radial-gradient(circle, #e6d3af, #c2a373);
+        }
+
+        [data-theme="cyberpunk"] {
+            --bg-color: #0b0b1a;
+            --text-color: #00ffcc;
+            --window-bg: #1a1a2e;
+            --accent-color: #ff00ff;
+            --font-family: 'Courier New', Courier, monospace;
+            --border-radius: 0px;
+            --desktop-bg: repeating-linear-gradient(45deg, #0b0b1a, #0b0b1a 10px, #1a1a2e 10px, #1a1a2e 20px);
+        }
+
+        [data-theme="hogwarts"] {
+            --bg-color: #2a1b12;
+            --text-color: #d4af37;
+            --window-bg: #3e2723;
+            --accent-color: #7f0909;
+            --font-family: 'Georgia', serif;
+            --border-radius: 4px;
+            --desktop-bg: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%232a1b12"/><circle cx="50" cy="50" r="40" stroke="%23d4af37" stroke-width="2" fill="none" opacity="0.1"/></svg>');
+        }
+
+        [data-theme="japan"] {
+            --bg-color: #e8dcca;
+            --text-color: #2c3e18;
+            --window-bg: #f4f1ea;
+            --accent-color: #6b8e23;
+            --font-family: 'Trebuchet MS', sans-serif;
+            --border-radius: 0px;
+            --desktop-bg: linear-gradient(to right, #e8dcca, #d5c7b3);
+        }
+
+        [data-theme="space"] {
+            --bg-color: #050505;
+            --text-color: #ffffff;
+            --window-bg: #111111;
+            --accent-color: #00bfff;
+            --font-family: 'Arial', sans-serif;
+            --border-radius: 20px;
+            --desktop-bg: radial-gradient(circle, #1a1a2e, #000000);
+        }
+
+        /* ================= Global Styles ================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--desktop-bg);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            height: 100vh;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        h1, h2, h3 { margin-bottom: 10px; color: var(--accent-color); }
+        p { line-height: 1.6; margin-bottom: 15px; }
+        hr { border: 0; border-top: 1px solid var(--accent-color); margin: 20px 0; opacity: 0.3; }
+
+        /* ================= Desktop UI ================= */
+        #desktop {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            height: 100%;
+        }
+
+        .app-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-align: center;
+        }
+
+        .app-icon:hover { transform: translateY(-5px) scale(1.05); }
+        .app-icon .icon { font-size: 60px; margin-bottom: 10px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); }
+        .app-icon span {
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.7);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* ================= Window UI ================= */
+        #window-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        #window-overlay.active { opacity: 1; pointer-events: all; }
+
+        .os-window {
+            background: var(--window-bg);
+            width: 85%; max-width: 1000px; height: 85vh;
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column;
+            border: 2px solid var(--accent-color);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #window-overlay.active .os-window { transform: scale(1); }
+
+        .window-header {
+            background: var(--accent-color); color: #fff;
+            padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 1.2rem; font-weight: bold;
+            border-top-left-radius: calc(var(--border-radius) - 2px);
+            border-top-right-radius: calc(var(--border-radius) - 2px);
+        }
+        .close-btn {
+            background: rgba(0,0,0,0.2); border: none; color: #fff;
+            width: 30px; height: 30px; border-radius: 50%;
+            cursor: pointer; font-size: 16px; transition: background 0.2s;
+        }
+        .close-btn:hover { background: red; }
+
+        .window-content { padding: 30px; overflow-y: auto; flex-grow: 1; }
+
+        /* ================= App Content Styles ================= */
+        .btn {
+            background: var(--accent-color); color: #fff;
+            border: none; padding: 10px 20px; margin: 5px;
+            border-radius: 5px; cursor: pointer; font-family: inherit;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.8; }
+        
+        .recipe-card, .info-card {
+            background: rgba(0,0,0,0.03); border-right: 5px solid var(--accent-color);
+            padding: 20px; margin-bottom: 20px; border-radius: 8px;
+        }
+        .tag {
+            display: inline-block; background: var(--accent-color); color: #fff;
+            padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 5px; margin-bottom: 10px;
+        }
+        .secret-box {
+            background: #fff3cd; border: 1px solid #ffeeba; color: #856404;
+            padding: 15px; border-radius: 5px; margin-top: 15px; font-style: italic;
+        }
+        [data-theme="cyberpunk"] .secret-box, [data-theme="space"] .secret-box {
+            background: #111; border-color: var(--accent-color); color: var(--accent-color);
+        }
+
+        .category-nav { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+
+    <div id="desktop">
+        <div class="app-icon" onclick="os.openApp('recipes')">
+            <div class="icon">📚</div><span>Every Recipe Ever</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('bible')">
+            <div class="icon">🔥</div><span>Coffee Bible</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('secrets')">
+            <div class="icon">🧠</div><span>Secret Knowledge</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('themes')">
+            <div class="icon">🎭</div><span>Theme Worlds</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('map')">
+            <div class="icon">🗺️</div><span>World of Coffee</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('timeMachine')">
+            <div class="icon">⏳</div><span>Time Machine</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('ingredients')">
+            <div class="icon">🎨</div><span>Ingredient Universe</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('encyclopedia')">
+            <div class="icon">🏆</div><span>Encyclopedia</span>
+        </div>
+    </div>
+
+    <div id="window-overlay" onclick="if(event.target === this) os.closeApp()">
+        <div class="os-window">
+            <div class="window-header">
+                <span id="window-title">App Name</span>
+                <button class="close-btn" onclick="os.closeApp()">✖</button>
+            </div>
+            <div class="window-content" id="window-content">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // ================= THE MASSIVE DATABASE =================
+        // اینجا می‌توانی هزاران دستور پخت را به مرور اضافه کنی. معماری طوری چیده شده که همه را پشتیبانی کند.
+        const db = {
+            recipes: {
+                hot: [
+                    {
+                        name: "اسپرسو سینگل (Espresso)",
+                        base: "۷-۹ گرم قهوه آسیاب شده، ۳۰ میلی‌لیتر آب جوش تحت فشار.",
+                        pro: "۱۸ گرم سابه قهوه (دبل سبد)، ۳۶ گرم عصاره‌گیری در ۲۵ تا ۳۰ ثانیه.",
+                        cafe: "استفاده از دستگاه‌های صنعتی چند بویلره با فشار دقیق ۹ بار.",
+                        mistakes: "تمپ کردن کج که باعث چنلینگ (Channeling) و ترش/تلخ شدن قهوه می‌شود.",
+                        secrets: "اگر اسپرسو ترش شد، زمان عصاره‌گیری کم بوده (Under-extracted). اگر تلخ شد، زمان زیاد بوده.",
+                        nutrition: "۲ کالری، ۰ گرم قند.",
+                        history: "در اوایل قرن ۲۰ در ایتالیا برای کاهش زمان دم‌آوری قهوه برای کارگران ابداع شد."
+                    },
+                    {
+                        name: "لاته آرت (Café Latte)",
+                        base: "۱ شات اسپرسو، شیر بخار داده شده، لایه نازک فوم.",
+                        pro: "میکروفوم مخملی (بدون حباب درشت) با دمای دقیق ۶۰ تا ۶۵ درجه سانتی‌گراد.",
+                        cafe: "نسبت ۱ به ۳ قهوه به شیر. ایجاد طرح‌های رزتا یا تولیپ روی سطح.",
+                        mistakes: "داغ کردن بیش از حد شیر (بالای ۷۰ درجه) که پروتئین شیر را می‌سوزاند و طعم پلاستیک می‌دهد.",
+                        secrets: "شیرین بودن ذاتی لاته به خاطر کاراملی شدن لاکتوز شیر در دمای ۶۰ درجه است. نیازی به شکر ندارد!",
+                        nutrition: "۱۲۰-۱۹۰ کالری بسته به نوع شیر.",
+                        history: "کلمه لاته در ایتالیایی یعنی شیر. در آمریکا توسط لینو مئورین در دهه ۱۹۵۰ استاندارد شد."
+                    }
+                ],
+                cold: [
+                    {
+                        name: "کلد برو (Cold Brew)",
+                        base: "قهوه درشت آسیاب شده، خیسانده در آب سرد برای ۱۲ تا ۲۴ ساعت.",
+                        pro: "استفاده از قهوه‌های سینگل اوریجین (مثل اتیوپی یرگاچف) برای استخراج نت‌های گلی و میوه‌ای.",
+                        cafe: "سرو در لیوان‌های کریستال با یخ کروی شفاف.",
+                        mistakes: "آسیاب ریز که باعث می‌شود نوشیدنی گل‌آلود و به شدت تلخ شود.",
+                        secrets: "کلد برو ۶۷٪ اسیدیته کمتری نسبت به قهوه داغ دارد، برای معده‌های حساس عالی است.",
+                        nutrition: "۵ کالری، کافئین بسیار بالا.",
+                        history: "قدمت آن به دهه ۱۶۰۰ در ژاپن (قهوه کیوتو) برمی‌گردد که توسط ملوانان هلندی معرفی شد."
+                    }
+                ],
+                cakes: [
+                    {
+                        name: "کیک لاوا شکلاتی (Molten Lava Cake)",
+                        base: "کره، شکلات تلخ، تخم‌مرغ، شکر، آرد.",
+                        pro: "استفاده از شکلات کوورتور (Couverture) با حداقل ۷۰٪ کاکائو برای مرکز روان.",
+                        cafe: "سرو با یک اسکوپ بستنی وانیلی ماداگاسکار و خاک قند روی آن.",
+                        mistakes: "پخت بیش از حد (حتی ۳۰ ثانیه) باعث می‌شود مرکز کیک سفت شود.",
+                        secrets: "برای اطمینان از روان بودن مرکز، می‌توانید یک ترافل شکلاتی یخ‌زده وسط خمیر خام قرار دهید.",
+                        nutrition: "۴۵۰ کالری در هر پرشن.",
+                        history: "در سال ۱۹۸۷ توسط سرآشپز ژان ژرژ در نیویورک به طور تصادفی (با زود درآوردن کیک از فر) کشف شد."
+                    },
+                    {
+                        name: "چیزکیک نیویورکی (New York Cheesecake)",
+                        base: "بیسکویت دایجستیو، پنیر خامه‌ای، تخم مرغ، شکر، خامه ترش.",
+                        pro: "پخت در حمام آب (Water bath) برای جلوگیری از ترک خوردن سطح کیک.",
+                        cafe: "استفاده از وانیل غلاف‌دار واقعی به جای عصاره.",
+                        mistakes: "هم زدن سریع مواد که باعث ورود هوا و پف کردن و سپس ترک خوردن کیک می‌شود.",
+                        secrets: "بعد از پخت، فر را خاموش کنید و درِ فر را نیمه‌باز بگذارید تا کیک یک ساعت داخل فر خنک شود.",
+                        nutrition: "۴۰۰-۶۰۰ کالری در هر برش.",
+                        history: "در سال ۱۹۲۹ در رستوران Turf نیویورک توسط آرنولد روبن ابداع شد."
+                    }
+                ]
+            },
+            knowledge: [
+                {
+                    q: "چرا اسپرسو تلخ می‌شود؟",
+                    a: "تلخی بیش از حد (Over-extraction) به سه دلیل عمده است: ۱. دمای آب بالای ۹۳ درجه، ۲. آسیاب بیش از حد ریز، ۳. زمان عصاره‌گیری طولانی (بالای ۳۵ ثانیه)."
+                },
+                {
+                    q: "چرا بعضی کیک‌ها خشک می‌شوند؟",
+                    a: "مخلوط کردن بیش از حد آرد (Overmixing) باعث توسعه شبکه گلوتن می‌شود. راز یک کیک لطیف، فولد کردن ملایم مواد خشک است."
+                },
+                {
+                    q: "تفاوت ماکیاتو و کورتادو چیست؟",
+                    a: "ماکیاتو فقط یک لکه فوم شیر روی اسپرسو است، اما کورتادو ترکیب مساوی (۱:۱) اسپرسو و شیر گرم است تا اسیدیته قهوه را متعادل کند."
+                }
+            ],
+            map: [
+                { country: "ایتالیا 🇮🇹", culture: "قهوه در ایتالیا یک آیین سریع است. اسپرسو ایستاده در بار نوشیده می‌شود. کاپوچینو فقط برای صبحانه است.", famous: "اسپرسو، ماکیاتو، تیرامیسو" },
+                { country: "ترکیه 🇹🇷", culture: "قهوه جوشیده در جذوه روی شن داغ. فال قهوه یک سنت مهم است.", famous: "قهوه ترک، باقلوا، لوکوم" },
+                { country: "ژاپن 🇯🇵", culture: "دقت هندسی در دم‌آوری. زادگاه روش‌های قطره‌ای (Pour-over) و V60.", famous: "قهوه سایفون، ماچا لاته، موچی" }
+            ],
+            timeMachine: [
+                { era: "سال 1700", desc: "قهوه‌خانه‌ها در اروپا به 'دانشگاه‌های یک پنی' معروف بودند. قهوه در ظرف‌های مسی دم می‌شد و پر از لرد بود." },
+                { era: "سال 1950", desc: "انقلاب دستگاه‌های اهرمی اسپرسو توسط آشیل گاگیا. تولد کرمای طلایی روی قهوه و شکل‌گیری کافه‌های مدرن." },
+                { era: "امروز (موج سوم)", desc: "قهوه به عنوان یک نوشیدنی آرتیزان. اهمیت به کشاورز، رست روشن، لاته آرت و روش‌های دم‌آوری دقیق مثل کمکس." }
+            ],
+            ingredients: [
+                { name: "دارچین (Cinnamon)", types: "کاسیا (رایج)، سیلان (شیرین و گران)", match: "سیب، قهوه دمی، کیک هویج", wiki: "دارچین سیلان به دلیل داشتن کومارین بسیار پایین‌تر، برای مصرف روزانه ایمن‌تر است." },
+                { name: "شیر جودوسر (Oat Milk)", types: "باریستا ادیشن، معمولی", match: "لاته، ماکیاتو", wiki: "در نسخه باریستا، روغن گیاهی اضافه می‌شود تا قابلیت فوم‌گیری شبیه شیر گاو پیدا کند." }
+            ]
+        };
+
+        // ================= OPERATING SYSTEM LOGIC =================
+        const os = {
+            contentDiv: document.getElementById('window-content'),
+            titleSpan: document.getElementById('window-title'),
+            overlay: document.getElementById('window-overlay'),
+
+            openApp(appName) {
+                this.overlay.classList.add('active');
+                
+                // Route to different apps
+                switch(appName) {
+                    case 'recipes': this.renderRecipes('hot'); break;
+                    case 'bible': this.renderBible(); break;
+                    case 'secrets': this.renderSecrets(); break;
+                    case 'themes': this.renderThemes(); break;
+                    case 'map': this.renderMap(); break;
+                    case 'timeMachine': this.renderTimeMachine(); break;
+                    case 'ingredients': this.renderIngredients(); break;
+                    case 'encyclopedia': this.renderEncyclopedia(); break;
+                }
+            },
+
+            closeApp() {
+                this.overlay.classList.remove('active');
+            },
+
+            // --- Apps Rendering Functions ---
+            
+            renderRecipes(category) {
+                this.titleSpan.innerText = "📚 Every Recipe Ever";
+                let html = `
+                    <div class="category-nav">
+                        <button class="btn" onclick="os.renderRecipes('hot')">☕ نوشیدنی‌های گرم</button>
+                        <button class="btn" onclick="os.renderRecipes('cold')">🧊 نوشیدنی‌های سرد</button>
+                        <button class="btn" onclick="os.renderRecipes('cakes')">🍰 کیک‌ها و دسرها</button>
+                    </div>
+                `;
+
+                db.recipes[category].forEach(item => {
+                    html += `
+                        <div class="recipe-card">
+                            <h2>${item.name}</h2>
+                            <p><span class="tag">دستور پایه</span> ${item.base}</p>
+                            <p><span class="tag">نسخه حرفه‌ای</span> ${item.pro}</p>
+                            <p><span class="tag">نسخه کافه</span> ${item.cafe}</p>
+                            <p><strong>❌ اشتباهات رایج:</strong> ${item.mistakes}</p>
+                            <p><strong>📊 ارزش غذایی:</strong> ${item.nutrition}</p>
+                            <p><strong>📜 تاریخچه:</strong> ${item.history}</p>
+                            <div class="secret-box"><strong>💡 راز طعم بهتر:</strong> ${item.secrets}</div>
+                        </div>
+                    `;
+                });
+                this.contentDiv.innerHTML = html;
+            },
+
+            renderBible() {
+                this.titleSpan.innerText = "🔥 The Coffee & Dessert Bible";
+                this.contentDiv.innerHTML = `
+                    <h2>مرجع کامل قهوه و دسر جهان</h2>
+                    <p>این بخش یک راهنمای جامع است. تمامی اطلاعات با هم ادغام شده‌اند.</p>
+                    <hr>
+                    <h3>قوانین طلایی باریستا:</h3>
+                    <ul>
+                        <li>همیشه تجهیزات را تمیز نگه دارید (روغن قهوه به سرعت فاسد می‌شود).</li>
+                        <li>قهوه را فقط قبل از دم‌آوری آسیاب کنید.</li>
+                        <li>آب ۹۸٪ قهوه شماست، از آب تصفیه شده با سختی مناسب (TDS 100-150) استفاده کنید.</li>
+                    </ul>
+                    <hr>
+                    <h3>مقایسه‌ها:</h3>
+                    <div class="info-card">
+                        <strong>عربیکا در برابر روبوستا:</strong><br>
+                        عربیکا: اسیدیته بیشتر، طعم‌های پیچیده و میوه‌ای، کافئین کمتر، قیمت بالاتر.<br>
+                        روبوستا: تلخی بیشتر، بادی (Body) سنگین‌تر، کرمای بهتر، کافئین دو برابر.
+                    </div>
+                `;
+            },
+
+            renderSecrets() {
+                this.titleSpan.innerText = "🧠 Secret Knowledge";
+                let html = `<h2>> Things Most People Don't Know</h2><p>حقایقی که باریستاها به شما نمی‌گویند:</p>`;
+                db.knowledge.forEach(k => {
+                    html += `
+                        <div class="info-card">
+                            <h3>❓ ${k.q}</h3>
+                            <p>✔️ ${k.a}</p>
+                        </div>
+                    `;
+                });
+                this.contentDiv.innerHTML = html;
+            },
+
+            renderThemes() {
+                this.titleSpan.innerText = "🎭 Theme Worlds";
+                this.contentDiv.innerHTML = `
+                    <h2>تم کافه را انتخاب کنید</h2>
+                    <p>با یک کلیک وارد دنیای جدیدی شوید:</p>
+                    <button class="btn" onclick="os.changeTheme('default')">☕ Modern Minimalist</button>
+                    <button class="btn" onclick="os.changeTheme('cyberpunk')">🌃 Cyberpunk Café</button>
+                    <button class="btn" onclick="os.changeTheme('hogwarts')">⚡ Hogwarts
