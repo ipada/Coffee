@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -8,7 +7,7 @@
     <style>
         /* ================= Theme System ================= */
         :root {
-            --bg-color: #f4e4c1; /* Latte Base */
+            --bg-color: #f4e4c1;
             --text-color: #3e2723;
             --window-bg: #ffffff;
             --accent-color: #8b5a2b;
@@ -34,7 +33,7 @@
             --accent-color: #7f0909;
             --font-family: 'Georgia', serif;
             --border-radius: 4px;
-            --desktop-bg: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%232a1b12"/><circle cx="50" cy="50" r="40" stroke="%23d4af37" stroke-width="2" fill="none" opacity="0.1"/></svg>');
+            --desktop-bg: radial-gradient(circle, #3e2723, #1a0f0a);
         }
 
         [data-theme="japan"] {
@@ -103,6 +102,250 @@
 
         /* ================= Window UI ================= */
         #window-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        #window-overlay.active { opacity: 1; pointer-events: all; }
+
+        .os-window {
+            background: var(--window-bg);
+            width: 85%; max-width: 1000px; height: 85vh;
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column;
+            border: 2px solid var(--accent-color);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #window-overlay.active .os-window { transform: scale(1); }
+
+        .window-header {
+            background: var(--accent-color); color: #fff;
+            padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 1.2rem; font-weight: bold;
+            border-top-left-radius: calc(var(--border-radius) - 2px);
+            border-top-right-radius: calc(var(--border-radius) - 2px);
+        }
+        .close-btn {
+            background: rgba(0,0,0,0.2); border: none; color: #fff;
+            width: 30px; height: 30px; border-radius: 50%;
+            cursor: pointer; font-size: 16px; transition: background 0.2s;
+        }
+        .close-btn:hover { background: red; }
+
+        .window-content { padding: 30px; overflow-y: auto; flex-grow: 1; }
+
+        /* ================= App Content Styles ================= */
+        .btn {
+            background: var(--accent-color); color: #fff;
+            border: none; padding: 10px 20px; margin: 5px;
+            border-radius: 5px; cursor: pointer; font-family: inherit;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.8; }
+        
+        .recipe-card, .info-card {
+            background: rgba(0,0,0,0.03); border-right: 5px solid var(--accent-color);
+            padding: 20px; margin-bottom: 20px; border-radius: 8px;
+        }
+        .tag {
+            display: inline-block; background: var(--accent-color); color: #fff;
+            padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 5px; margin-bottom: 10px;
+        }
+        .secret-box {
+            background: #fff3cd; border: 1px solid #ffeeba; color: #856404;
+            padding: 15px; border-radius: 5px; margin-top: 15px; font-style: italic;
+        }
+        [data-theme="cyberpunk"] .secret-box, [data-theme="space"] .secret-box {
+            background: #111; border-color: var(--accent-color); color: var(--accent-color);
+        }
+        .category-nav { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+
+    <div id="desktop">
+        <div class="app-icon" onclick="os.openApp('recipes')">
+            <div class="icon">📚</div><span>Every Recipe Ever</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('bible')">
+            <div class="icon">🔥</div><span>Coffee Bible</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('secrets')">
+            <div class="icon">🧠</div><span>Secret Knowledge</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('themes')">
+            <div class="icon">🎭</div><span>Theme Worlds</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('map')">
+            <div class="icon">🗺️</div><span>World of Coffee</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('timeMachine')">
+            <div class="icon">⏳</div><span>Time Machine</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('ingredients')">
+            <div class="icon">🎨</div><span>Ingredient Universe</span>
+        </div>
+        <div class="app-icon" onclick="os.openApp('encyclopedia')">
+            <div class="icon">🏆</div><span>Encyclopedia</span>
+        </div>
+    </div>
+
+    <div id="window-overlay" onclick="if(event.target === this) os.closeApp()">
+        <div class="os-window">
+            <div class="window-header">
+                <span id="window-title">App Name</span>
+                <button class="close-btn" onclick="os.closeApp()">✖</button>
+            </div>
+            <div class="window-content" id="window-content">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================= DATABASE =================
+        const db = {
+            recipes: {
+                hot: [
+                    { name: "اسپرسو سینگل (Espresso)", base: "۷-۹ گرم قهوه، ۳۰ میلی‌لیتر آب جوش.", pro: "۱۸ گرم سابه (دبل)، ۳۶ گرم عصاره در ۲۵ ثانیه.", cafe: "دستگاه صنعتی ۹ بار.", mistakes: "تمپ کج، چنلینگ.", secrets: "اسپرسو ترش = عصاره‌گیری کم. اسپرسو تلخ = عصاره‌گیری زیاد.", nutrition: "۲ کالری", history: "اوایل قرن ۲۰ - ایتالیا" },
+                    { name: "لاته آرت (Café Latte)", base: "۱ شات اسپرسو، شیر بخار داده، فوم نازک.", pro: "میکروفوم مخملی ۶۰ درجه.", cafe: "نسبت ۱ به ۳ قهوه به شیر.", mistakes: "داغ کردن شیر بالای ۷۰ درجه.", secrets: "شیرین بودن لاته به خاطر کاراملی شدن لاکتوز در ۶۰ درجه است.", nutrition: "۱۵۰ کالری", history: "دهه ۱۹۵۰ - آمریکا" }
+                ],
+                cold: [
+                    { name: "کلد برو (Cold Brew)", base: "قهوه درشت، خیسانده در آب سرد ۲۴ ساعت.", pro: "استفاده از قهوه سینگل اوریجین اتیوپی.", cafe: "سرو با یخ کروی.", mistakes: "آسیاب ریز (گل‌آلود شدن).", secrets: "۶۷٪ اسیدیته کمتر نسبت به قهوه داغ.", nutrition: "۵ کالری", history: "دهه ۱۶۰۰ - ژاپن" }
+                ],
+                cakes: [
+                    { name: "لاوا شکلاتی", base: "کره، شکلات تلخ، تخم‌مرغ، شکر.", pro: "شکلات کوورتور ۷۰٪.", cafe: "سرو با بستنی وانیلی.", mistakes: "پخت بیش از حد (سفت شدن مرکز).", secrets: "قرار دادن ترافل یخ‌زده در مرکز خمیر.", nutrition: "۴۵۰ کالری", history: "۱۹۸۷ - نیویورک" }
+                ]
+            },
+            knowledge: [
+                { q: "چرا اسپرسو تلخ می‌شود؟", a: "دمای آب بالای ۹۳ درجه، آسیاب ریز، زمان عصاره‌گیری بالای ۳۵ ثانیه." },
+                { q: "چرا بعضی کیک‌ها خشک می‌شوند؟", a: "مخلوط کردن بیش از حد آرد (Overmixing) که باعث توسعه گلوتن می‌شود." }
+            ],
+            map: [
+                { country: "ایتالیا 🇮🇹", culture: "اسپرسو ایستاده در بار. کاپوچینو فقط برای صبحانه.", famous: "اسپرسو، تیرامیسو" },
+                { country: "ژاپن 🇯🇵", culture: "دقت هندسی در دم‌آوری. روش‌های قطره‌ای.", famous: "سایفون، ماچا" }
+            ],
+            timeMachine: [
+                { era: "1700", desc: "قهوه‌خانه‌ها در اروپا 'دانشگاه‌های یک پنی' بودند." },
+                { era: "امروز", desc: "قهوه موج سوم: تمرکز روی کشاورز، رست روشن و دم‌آوری دقیق." }
+            ],
+            ingredients: [
+                { name: "شیر جودوسر (Oat Milk)", types: "باریستا، معمولی", match: "لاته، ماکیاتو", wiki: "نسخه باریستا روغن گیاهی دارد تا فوم‌گیری شبیه شیر گاو شود." }
+            ]
+        };
+
+        // ================= OS LOGIC =================
+        const os = {
+            contentDiv: document.getElementById('window-content'),
+            titleSpan: document.getElementById('window-title'),
+            overlay: document.getElementById('window-overlay'),
+
+            openApp(appName) {
+                this.overlay.classList.add('active');
+                
+                switch(appName) {
+                    case 'recipes': this.renderRecipes('hot'); break;
+                    case 'bible': this.renderBible(); break;
+                    case 'secrets': this.renderSecrets(); break;
+                    case 'themes': this.renderThemes(); break;
+                    case 'map': this.renderMap(); break;
+                    case 'timeMachine': this.renderTimeMachine(); break;
+                    case 'ingredients': this.renderIngredients(); break;
+                    case 'encyclopedia': this.renderEncyclopedia(); break;
+                }
+            },
+
+            closeApp() {
+                this.overlay.classList.remove('active');
+            },
+
+            renderRecipes(category) {
+                this.titleSpan.innerText = "📚 Every Recipe Ever";
+                let html = `
+                    <div class="category-nav">
+                        <button class="btn" onclick="os.renderRecipes('hot')">☕ گرم</button>
+                        <button class="btn" onclick="os.renderRecipes('cold')">🧊 سرد</button>
+                        <button class="btn" onclick="os.renderRecipes('cakes')">🍰 کیک</button>
+                    </div>
+                `;
+                db.recipes[category].forEach(item => {
+                    html += `
+                        <div class="recipe-card">
+                            <h2>${item.name}</h2>
+                            <p><span class="tag">پایه</span> ${item.base}</p>
+                            <p><span class="tag">حرفه‌ای</span> ${item.pro}</p>
+                            <p><strong>❌ اشتباهات:</strong> ${item.mistakes}</p>
+                            <div class="secret-box"><strong>💡 راز:</strong> ${item.secrets}</div>
+                        </div>
+                    `;
+                });
+                this.contentDiv.innerHTML = html;
+            },
+
+            renderBible() {
+                this.titleSpan.innerText = "🔥 Coffee Bible";
+                this.contentDiv.innerHTML = `<h2>قوانین طلایی باریستا</h2><ul><li>تجهیزات تمیز</li><li>آسیاب تازه</li><li>آب تصفیه شده</li></ul>`;
+            },
+
+            renderSecrets() {
+                this.titleSpan.innerText = "🧠 Secret Knowledge";
+                let html = `<h2>حقایق مخفی</h2>`;
+                db.knowledge.forEach(k => { html += `<div class="info-card"><h3>❓ ${k.q}</h3><p>✔️ ${k.a}</p></div>`; });
+                this.contentDiv.innerHTML = html;
+            },
+
+            renderThemes() {
+                this.titleSpan.innerText = "🎭 Theme Worlds";
+                this.contentDiv.innerHTML = `
+                    <h2>تم کافه را انتخاب کنید</h2>
+                    <button class="btn" onclick="os.changeTheme('default')">☕ Modern</button>
+                    <button class="btn" onclick="os.changeTheme('cyberpunk')">🌃 Cyberpunk</button>
+                    <button class="btn" onclick="os.changeTheme('hogwarts')">⚡ Hogwarts</button>
+                    <button class="btn" onclick="os.changeTheme('japan')">🌸 Japan</button>
+                    <button class="btn" onclick="os.changeTheme('space')">🚀 Space</button>
+                `;
+            },
+
+            renderMap() {
+                this.titleSpan.innerText = "🗺️ World Map";
+                let html = `<h2>نقشه جهان</h2>`;
+                db.map.forEach(m => { html += `<div class="info-card"><h3>${m.country}</h3><p>${m.culture}</p></div>`; });
+                this.contentDiv.innerHTML = html;
+            },
+
+            renderTimeMachine() {
+                this.titleSpan.innerText = "⏳ Time Machine";
+                let html = `<h2>سفر در زمان</h2>`;
+                db.timeMachine.forEach(t => { html += `<div class="info-card"><h3>${t.era}</h3><p>${t.desc}</p></div>`; });
+                this.contentDiv.innerHTML = html;
+            },
+
+            renderIngredients() {
+                this.titleSpan.innerText = "🎨 Ingredients";
+                let html = `<h2>مواد اولیه</h2>`;
+                db.ingredients.forEach(i => { html += `<div class="info-card"><h3>${i.name}</h3><div class="secret-box">${i.wiki}</div></div>`; });
+                this.contentDiv.innerHTML = html;
+            },
+
+            renderEncyclopedia() {
+                this.titleSpan.innerText = "🏆 Encyclopedia";
+                this.contentDiv.innerHTML = `<div class="info-card"><h3>گران‌ترین قهوه</h3><p>بلک ایوری (تایلند) - کیلویی ۲۰۰۰ دلار.</p></div>`;
+            },
+
+            changeTheme(themeName) {
+                if(themeName === 'default') document.documentElement.removeAttribute('data-theme');
+                else document.documentElement.setAttribute('data-theme', themeName);
+            }
+        };
+    </script>
+</body>
+</html>
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.7);
             display: flex; justify-content: center; align-items: center;
