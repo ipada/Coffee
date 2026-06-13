@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Café ☕</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* THEMES */
+:root {
+  --bg: #0D0905;
+  --fg: #F5EDD6;
+  --gold: #C8983A;
+  --card: #201408;
+}
+
+body.light { --bg: #FFF8F0; --fg: #1a1a1a; --gold: #D4851D; --card: #E8DCC8; }
+body.dark { --bg: #0D0905; --fg: #F5EDD6; --gold: #C8983A; --card: #201408; }
+body.neon { --bg: #0A0E27; --fg: #00FF88; --gold: #FF006E; --card: #1a1f3a; }
+body.japan { --bg: #1a1a1a; --fg: #E8D4B8; --gold: #D4671D; --card: #2a2a2a; }
+body.italy { --bg: #1a1a08; --fg: #F5EDD6; --gold: #C8983A; --card: #2a1808; }
+body.rain { --bg: #2a3f5f; --fg: #E8E0D0; --gold: #7fb3d5; --card: #3a4f6f; }
+body.snow { --bg: #E8F0F5; --fg: #1a2a3a; --gold: #4A90D9; --card: #D8E8F0; }
+body.autumn { --bg: #3d2817; --fg: #F5EDD6; --gold: #D4851D; --card: #4d3827; }
+
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  overflow-x: hidden;
+  transition: all 0.5s;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(13,9,5,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(200,152,58,0.2);
+  height: 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.nav-menu {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  padding: 0.3rem 0.7rem;
+  background: transparent;
+  border: none;
+  color: var(--fg);
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 8px;
+}
+
+.nav-btn:hover, .nav-btn.active {
+  color: var(--gold);
+  background: rgba(200,152,58,0.15);
+}
+
+/* MAIN */
+main { padding-top: 70px; max-width: 1200px; margin: 0 auto; }
+
+section {
+  display: none;
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 70px);
+}
+
+section.show { display: block; }
+
+/* BUILDER */
+.builder-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  align-items: start;
+}
+
+.builder-left { display: flex; flex-direction: column; gap: 1rem; }
+
+.step {
+  background: var(--card);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 14px;
+  padding: 1.25rem;
+  transition: all 0.2s;
+}
+
+.step h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+}
+
+.options {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.opt-btn {
+  padding: 0.4rem 0.9rem;
+  background: rgba(200,152,58,0.1);
+  border: 1px solid rgba(200,152,58,0.25);
+  color: var(--fg);
+  border-radius: 100px;
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.opt-btn:hover { border-color: var(--gold); color: var(--gold); }
+.opt-btn.active { background: rgba(200,152,58,0.3); border-color: var(--gold); color: var(--gold); }
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.slider-label {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.6);
+  width: 60px;
+  flex-shrink: 0;
+}
+
+input[type="range"] {
+  flex: 1;
+  height: 4px;
+  background: rgba(200,152,58,0.2);
+  border-radius: 2px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--gold);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider-val {
+  font-size: 0.75rem;
+  color: var(--gold);
+  width: 28px;
+  text-align: right;
+}
+
+/* CUP PREVIEW */
+.cup-container {
+  position: relative;
+  width: 280px;
+  height: 400px;
+  background: var(--card);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  sticky: true;
+  top: 80px;
+}
+
+.cup-svg {
+  width: 180px;
+  height: 280px;
+  position: relative;
+}
+
+.cup {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+}
+
+.cup-liquid {
+  fill: #6B3A1F;
+  transition: fill 0.3s, opacity 0.3s;
+}
+
+.cup-foam {
+  fill: rgba(255,220,180,0.6);
+  transition: opacity 0.3s;
+}
+
+.cup-topping {
+  fill: rgba(200,152,58,0.8);
+  transition: opacity 0.3s;
+}
+
+.steam {
+  opacity: 0;
+  animation: steam 2s ease-in-out infinite;
+}
+
+.steam:nth-child(1) { animation-delay: 0s; }
+.steam:nth-child(2) { animation-delay: 0.6s; }
+.steam:nth-child(3) { animation-delay: 1.2s; }
+
+@keyframes steam {
+  0%, 100% { opacity: 0; transform: translateY(0); }
+  50% { opacity: 0.8; transform: translateY(-30px); }
+}
+
+.cup-info {
+  position: absolute;
+  bottom: 1.5rem;
+  text-align: center;
+  width: 90%;
+}
+
+.cup-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.cup-desc {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.6);
+}
+
+/* BUTTONS */
+.btn-group {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.btn {
+  padding: 0.6rem 1.4rem;
+  border-radius: 100px;
+  border: none;
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), #E8651A);
+  color: #0D0905;
+  box-shadow: 0 4px 15px rgba(232,101,26,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(232,101,26,0.45);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1.5px solid var(--gold);
+  color: var(--gold);
+}
+
+.btn-secondary:hover {
+  background: rgba(200,152,58,0.1);
+}
+
+/* FLAVOR BARS */
+.flavor-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.fbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fbar-label {
+  font-size: 0.75rem;
+  width: 50px;
+  color: rgba(255,255,255,0.6);
+}
+
+.fbar-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(200,152,58,0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.fbar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #E8651A);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+/* ACHIEVEMENTS */
+.achievements {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.achievement {
+  background: var(--card);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  opacity: 0.4;
+  transition: all 0.3s;
+}
+
+.achievement.unlocked {
+  opacity: 1;
+  border-color: var(--gold);
+  background: rgba(200,152,58,0.1);
+  animation: unlock 0.6s ease;
+}
+
+@keyframes unlock {
+  0% { transform: scale(0.8); }
+  100% { transform: scale(1); }
+}
+
+.ach-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+.ach-name { font-size: 0.75rem; font-weight: 700; }
+
+/* MODAL */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(5px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.modal-bg.show { display: flex; }
+
+.modal {
+  background: var(--bg);
+  border: 1px solid rgba(200,152,58,0.3);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 700px;
+  width: 100%;
+  margin: auto;
+  position: relative;
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  color: var(--fg);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* FORTUNE */
+.fortune-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--gold);
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: rgba(200,152,58,0.1);
+  border-radius: 12px;
+  border-left: 3px solid var(--gold);
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* GAME */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.game-scene {
+  width: 400px;
+  height: 500px;
+  background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid var(--gold);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.game-cup {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 120px;
+  background: white;
+  border: 2px solid #8B7355;
+  border-radius: 0 0 10px 10px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.game-liquid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #6B3A1F;
+  height: 0%;
+  transition: height 0.1s;
+  border-radius: 0 0 8px 8px;
+}
+
+.game-score {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #1a1a1a;
+}
+
+/* THEME SELECTOR */
+.theme-selector {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.theme-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 100px;
+  border: 1px solid rgba(200,152,58,0.3);
+  background: transparent;
+  color: var(--fg);
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-btn.active {
+  background: var(--gold);
+  color: #0D0905;
+  border-color: var(--gold);
+}
+
+/* RECIPES */
+.recipe-card {
+  background: var(--card);
+  border: 1px solid rgba(200,152,58,0.2);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s;
+}
+
+.recipe-card:hover {
+  border-color: rgba(200,152,58,0.5);
+  transform: translateY(-2px);
+}
+
+.recipe-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.recipe-content {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.8);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .builder-grid { grid-template-columns: 1fr; }
+  .cup-container { position: static; margin: 2rem auto; }
+  .achievements { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ANIMATIONS */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.float { animation: float 3s ease-in-out infinite; }
+
+/* PARTICLES */
+.particle {
+  position: fixed;
+  pointer-events: none;
+  animation: particleFloat 3s ease-in forwards;
+}
+
+@keyframes particleFloat {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-100px); }
+}
+
+/* CINEMATIC */
+.cinematic-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.cinematic-overlay.show { display: flex; animation: fadeIn 0.5s; }
+.cinematic-card { background: var(--card); border: 1px solid var(--gold); border-radius: 16px; padding: 2rem; text-align: center; animation: scaleIn 0.8s ease; }
+.cinematic-card h2 { font-size: 2rem; margin-bottom: 1rem; }
+.cinematic-card p { color: rgba(255,255,255,0.7); line-height: 1.8; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+</style>
+</head>
+<body class="dark">
+
+<nav>
+  <div class="logo">☕ Virtual Café</div>
+  <div class="nav-menu">
+    <button class="nav-btn active" onclick="show('home')">🏠</button>
+    <button class="nav-btn" onclick="show('builder')">🍷 ساخت</button>
+    <button class="nav-btn" onclick="show('secrets')">🔒 مخفی</button>
+    <button class="nav-btn" onclick="show('game')">🎮 بازی</button>
+    <button class="nav-btn" onclick="show('recipes')">📖 دستورها</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- HOME -->
+<section id="home" class="show">
+  <h1 style="font-size:2.5rem;text-align:center;margin-bottom:1rem;font-weight:900;">☕ خوش آمدید</h1>
+  <p style="text-align:center;font-size:1.1rem;color:rgba(255,255,255,0.7);margin-bottom:2rem;line-height:1.8;">
+    برای ساخت نوشیدنی درخت‌ای، بازی کردن و کشف رازهای قهوه اینجا هستید!
+  </p>
+
+  <div style="margin-bottom:2rem;">
+    <h3 style="text-align:center;color:var(--gold);margin-bottom:1rem;font-size:1.1rem;">🎨 تم انتخاب کن</h3>
+    <div class="theme-selector" style="justify-content:center;">
+      <button class="theme-btn active" onclick="setTheme('dark')">🌙 تاریک</button>
+      <button class="theme-btn" onclick="setTheme('light')">☀️ روز</button>
+      <button class="theme-btn" onclick="setTheme('neon')">💜 نئون</button>
+      <button class="theme-btn" onclick="setTheme('japan')">🗾 ژاپنی</button>
+      <button class="theme-btn" onclick="setTheme('italy')">🇮🇹 ایتالیایی</button>
+      <button class="theme-btn" onclick="setTheme('rain')">🌧️ بارانی</button>
+      <button class="theme-btn" onclick="setTheme('snow')">❄️ برفی</button>
+      <button class="theme-btn" onclick="setTheme('autumn')">🍂 پاییز</button>
+    </div>
+  </div>
+
+  <div class="btn-group" style="justify-content:center;">
+    <button class="btn btn-primary" onclick="show('builder')">🍷 شروع ساخت</button>
+    <button class="btn btn-secondary" onclick="surpriseMe()">🎲 Surprise Me</button>
+    <button class="btn btn-secondary" onclick="show('game')">🎮 بازی</button>
+    <button class="btn btn-secondary" onclick="show('secrets')">🔒 رازها</button>
+  </div>
+
+  <div class="achievements" id="home-achievements" style="margin-top:3rem;"></div>
+</section>
+
+<!-- BUILDER -->
+<section id="builder">
+  <h1 style="margin-bottom:2rem;font-weight:900;">🍷 Live Builder</h1>
+  
+  <div class="builder-grid">
+    <div class="builder-left">
+      <div class="step">
+        <h3>📋 نوع نوشیدنی</h3>
+        <div class="options">
+          <button class="opt-btn active" onclick="selectBase('coffee')">☕ قهوه</button>
+          <button class="opt-btn" onclick="selectBase('tea')">🍵 چای</button>
+          <button class="opt-btn" onclick="selectBase('chocolate')">🍫 شکلات</button>
+          <button class="opt-btn" onclick="selectBase('milk')">🥛 شیر</button>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3>❄️ یخ</h3>
+        <div class="slider-row">
+          <span class="slider-label">میزان</span>
+          <input type="range" min="0" max="100" value="0" oninput="updateIce(this.value)">
+          <span class="slider-val" id="ice-val">0%</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3>🍯 شیریات</h3>
+        <div class="options">
+          <button class="opt-btn" onclick="toggleSyrup('vanilla')">🍦 وانیل</button>
+          <button class="opt-btn" onclick="toggleSyrup('caramel')">🍮 کارامل</button>
+          <button class="opt-btn" onclick="toggleSyrup('hazelnut')">🌰 فندق</button>
+          <button class="opt-btn" onclick="toggleSyrup('vanilla-caramel')">✨ ترکیب</button>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3>🍦 روی‌کاری</h3>
+        <div class="options">
+          <button class="opt-btn" onclick="toggleTopping('cream')">خامه</button>
+          <button class="opt-btn" onclick="toggleTopping('chocolate')">شکلات</button>
+          <button class="opt-btn" onclick="toggleTopping('caramel')">کارامل</button>
+          <button class="opt-btn" onclick="toggleTopping('none')">چیزی نه</button>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3>🌡️ دما</h3>
+        <div class="options">
+          <button class="opt-btn active" onclick="setTemp('hot')">☕ گرم</button>
+          <button class="opt-btn" onclick="setTemp('cold')">🧊 سرد</button>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3>🍂 شیرینی</h3>
+        <div class="slider-row">
+          <span class="slider-label">سطح</span>
+          <input type="range" min="0" max="100" value="50" oninput="updateFlavor('sweetness', this.value)">
+          <span class="slider-val" id="sweet-val">50</span>
+        </div>
+      </div>
+
+      <div class="btn-group" style="justify-content:center;margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="createDrink()">✅ ساخت نوشیدنی</button>
+        <button class="btn btn-secondary" onclick="surpriseMe()">🎲 تصادفی</button>
+      </div>
+    </div>
+
+    <div class="cup-container" id="cup-preview">
+      <div class="cup-svg">
+        <svg viewBox="0 0 200 280" class="cup">
+          <!-- Cup body -->
+          <defs>
+            <linearGradient id="cupGrad" x1="0%" y1="0%" x2="100%">
+              <stop offset="0%" style="stop-color:#FFF;stop-opacity:0.1" />
+              <stop offset="100%" style="stop-color:#000;stop-opacity:0.1" />
+            </linearGradient>
+          </defs>
+          <path d="M 50 40 L 40 240 Q 40 260 60 260 L 140 260 Q 160 260 160 240 L 150 40 Z" fill="#E8D9C3" stroke="#8B7355" stroke-width="2"/>
+          <path d="M 50 40 L 40 240 Q 40 260 60 260 L 140 260 Q 160 260 160 240 L 150 40 Z" fill="url(#cupGrad)"/>
+          
+          <!-- Handle -->
+          <path d="M 160 80 Q 190 80 190 140 Q 190 200 160 200" stroke="#8B7355" stroke-width="8" fill="none" stroke-linecap="round"/>
+          
+          <!-- Liquid -->
+          <ellipse cx="100" cy="60" rx="48" ry="12" fill="#E8D9C3" class="cup-liquid" id="cup-liquid"/>
+          <path d="M 52 60 Q 100 100 148 60 L 145 200 Q 100 220 55 200 Z" fill="#6B3A1F" class="cup-liquid" opacity="0.8" id="cup-fill"/>
+          
+          <!-- Foam -->
+          <ellipse cx="100" cy="58" rx="48" ry="12" fill="rgba(255,220,180,0.6)" class="cup-foam" id="cup-foam"/>
+          
+          <!-- Topping -->
+          <rect x="52" y="50" width="96" height="8" fill="rgba(200,152,58,0.8)" class="cup-topping" id="cup-topping" opacity="0"/>
+          
+          <!-- Steam -->
+          <path d="M 80 30 Q 75 10 80 0" stroke="rgba(200,200,200,0.5)" stroke-width="2" fill="none" stroke-linecap="round" class="steam"/>
+          <path d="M 100 25 Q 95 5 100 0" stroke="rgba(200,200,200,0.5)" stroke-width="2" fill="none" stroke-linecap="round" class="steam"/>
+          <path d="M 120 30 Q 125 10 120 0" stroke="rgba(200,200,200,0.5)" stroke-width="2" fill="none" stroke-linecap="round" class="steam"/>
+        </svg>
+      </div>
+
+      <div class="cup-info">
+        <div class="cup-name" id="cup-name">نوشیدنی خاص</div>
+        <div class="cup-desc" id="cup-desc">مواد را انتخاب کن</div>
+      </div>
+
+      <div class="flavor-bars" style="margin-top:1.5rem;width:100%;padding:0 0.5rem;">
+        <div class="fbar">
+          <span class="fbar-label">تلخی</span>
+          <div class="fbar-track"><div class="fbar-fill" id="bar-bitter" style="width:50%"></div></div>
+        </div>
+        <div class="fbar">
+          <span class="fbar-label">شیرینی</span>
+          <div class="fbar-track"><div class="fbar-fill" id="bar-sweet" style="width:50%"></div></div>
+        </div>
+        <div class="fbar">
+          <span class="fbar-label">کافئین</span>
+          <div class="fbar-track"><div class="fbar-fill" id="bar-caffeine" style="width:50%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECRETS -->
+<section id="secrets">
+  <h1 style="margin-bottom:2rem;font-weight:900;">🔒 رازهای قهوه</h1>
+  <p style="color:rgba(255,255,255,0.7);margin-bottom:2rem;">ترکیب‌های خاص را باز کن</p>
+  <div id="secrets-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;"></div>
+</section>
+
+<!-- GAME -->
+<section id="game">
+  <h1 style="margin-bottom:2rem;text-align:center;font-weight:900;">🎮 بازی باریستا</h1>
+  <div class="game-container">
+    <div class="game-scene">
+      <div class="game-score" id="game-score">0</div>
+      <div class="game-cup">
+        <div class="game-liquid" id="game-liquid"></div>
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <p id="game-instruction" style="font-size:1.1rem;margin-bottom:1rem;color:var(--gold);">شیر بریز!</p>
+      <div style="display:flex;gap:0.5rem;justify-content:center;">
+        <button class="btn btn-primary" id="game-btn" onmousedown="startPour()" onmouseup="stopPour()" ontouchstart="startPour()" ontouchend="stopPour()">🥛 نگه دار</button>
+        <button class="btn btn-secondary" onclick="startGame()">شروع</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECIPES -->
+<section id="recipes">
+  <h1 style="margin-bottom:2rem;font-weight:900;">📖 دستورهای ذخیره شده</h1>
+  <div id="recipes-list" style="max-width:600px;">
+    <p style="color:rgba(255,255,255,0.6);text-align:center;">هنوز نوشیدنی ذخیره نشده</p>
+  </div>
+</section>
+
+</main>
+
+<!-- CINEMATIC OVERLAY -->
+<div class="cinematic-overlay" id="cinematic">
+  <div class="cinematic-card" id="cinematic-card"></div>
+</div>
+
+<script>
+// STATE
+const state = {
+  base: 'coffee',
+  ice: 0,
+  syrups: [],
+  topping: 'cream',
+  temp: 'hot',
+  sweetness: 50,
+  recipes: JSON.parse(localStorage.getItem('recipes')) || [],
+  achievements: JSON.parse(localStorage.getItem('achievements')) || [],
+  secrets: {
+    'vanilla-caramel-oat': false,
+    'chocolate-hazelnut-cream': false,
+    'strawberry-vanilla-cold': false,
+    'espresso-vanilla-cream': false
+  }
+};
+
+const SECRETS = [
+  { id: 'vanilla-caramel-oat', name: '🌟 Vanilla Caramel Oat', req: 'وانیل + کارامل + سرد' },
+  { id: 'chocolate-hazelnut-cream', name: '🍫 Chocolate Hazelnut Dream', req: 'شکلات + فندق + خامه' },
+  { id: 'strawberry-vanilla-cold', name: '🍓 Strawberry Vanilla', req: 'وانیل + سرد' },
+  { id: 'espresso-vanilla-cream', name: '☕ Espresso Elegance', req: 'قهوه + وانیل + خامه' }
+];
+
+const FORTUNES = [
+  'امروز روز خوبی برای شروع کاری نیاز است',
+  'قهوه تنهای بهترین دوست است',
+  'هر فنجان قهوه یک خاطره دارد',
+  'آرام باش و لذت ببر',
+  'زندگی خوبتر است با قهوه',
+  'شما توانایی حذف‌کردن تمام چیز دارید',
+  'بهترین لحظات از دور میآیند',
+  'خود را به خودت اجازه بده',
+];
+
+const NAMES = [
+  'Midnight Velvet',
+  'Sakura Dream',
+  'Frosted Mocha',
+  'Golden Pistachio',
+  'Sunset Coffee',
+  'Ocean Breeze',
+  'Forest Spirit',
+  'Night Whisper',
+  'Morning Glory',
+  'Caramel Wings'
+];
+
+// THEME
+function setTheme(theme) {
+  document.body.className = theme;
+  localStorage.setItem('theme', theme);
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// LOAD THEME
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved) setTheme(saved);
+  renderSecrets();
+  renderAchievements();
+  renderRecipes();
+});
+
+// NAVIGATION
+function show(page) {
+  document.querySelectorAll('section').forEach(s => s.classList.remove('show'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(page).classList.add('show');
+  event.target.classList.add('active');
+}
+
+// BUILDER
+function selectBase(base) {
+  state.base = base;
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  updatePreview();
+}
+
+function toggleSyrup(syrup) {
+  const idx = state.syrups.indexOf(syrup);
+  if (idx > -1) state.syrups.splice(idx, 1);
+  else state.syrups.push(syrup);
+  event.target.classList.toggle('active');
+  updatePreview();
+}
+
+function toggleTopping(top) {
+  state.topping = top;
+  document.querySelectorAll('[onclick^="toggleTopping"]').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  updatePreview();
+}
+
+function setTemp(temp) {
+  state.temp = temp;
+  document.querySelectorAll('[onclick^="setTemp"]').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  updatePreview();
+}
+
+function updateIce(val) {
+  state.ice = parseInt(val);
+  document.getElementById('ice-val').textContent = val + '%';
+  updatePreview();
+}
+
+function updateFlavor(key, val) {
+  state[key] = parseInt(val);
+  document.getElementById('sweet-val').textContent = val;
+  updatePreview();
+}
+
+function updatePreview() {
+  // Update cup
+  const names = {
+    'coffee': '☕ قهوه',
+    'tea': '🍵 چای',
+    'chocolate': '🍫 شکلات',
+    'milk': '🥛 شیر'
+  };
+
+  const colors = {
+    'coffee': '#6B3A1F',
+    'tea': '#3D5A3E',
+    'chocolate': '#3A1A0A',
+    'milk': '#F5EDD6'
+  };
+
+  document.getElementById('cup-name').textContent = names[state.base];
+  document.getElementById('cup-liquid').setAttribute('fill', colors[state.base]);
+  document.getElementById('cup-fill').setAttribute('fill', colors[state.base]);
+
+  // Ice
+  const iceH = 40 + (state.ice / 100) * 100;
+  document.getElementById('cup-liquid').setAttribute('y', 60 + (100 - iceH) * 0.8);
+
+  // Foam opacity
+  document.getElementById('cup-foam').style.opacity = state.temp === 'hot' ? '0.8' : '0.3';
+
+  // Topping
+  const topOpacity = state.topping === 'none' ? 0 : 0.8;
+  document.getElementById('cup-topping').style.opacity = topOpacity;
+
+  // Steam
+  document.querySelectorAll('.steam').forEach(s => {
+    s.style.opacity = state.temp === 'hot' ? '0.6' : '0';
+  });
+
+  // Flavor bars
+  let bitter = 50, sweet = state.sweetness, caff = 50;
+  if (state.base === 'coffee') { bitter = 70; caff = 85; }
+  if (state.base === 'tea') { bitter = 40; caff = 60; }
+  if (state.base === 'chocolate') { bitter = 30; sweet = 90; caff = 20; }
+  if (state.base === 'milk') { bitter = 10; sweet = 80; caff = 5; }
+
+  if (state.syrups.includes('caramel') || state.syrups.includes('vanilla-caramel')) sweet += 20;
+  if (state.topping === 'cream') sweet += 10;
+
+  document.getElementById('bar-bitter').style.width = Math.min(bitter, 100) + '%';
+  document.getElementById('bar-sweet').style.width = Math.min(sweet, 100) + '%';
+  document.getElementById('bar-caffeine').style.width = Math.min(caff, 100) + '%';
+
+  // Description
+  const parts = [names[state.base]];
+  if (state.syrups.length) parts.push(state.syrups.join(' + '));
+  if (state.topping !== 'none') parts.push(state.topping);
+  document.getElementById('cup-desc').textContent = parts.join(' • ');
+}
+
+function createDrink() {
+  const drink = {
+    id: Date.now(),
+    name: NAMES[Math.floor(Math.random() * NAMES.length)],
+    ...state
+  };
+
+  state.recipes.push(drink);
+  localStorage.setItem('recipes', JSON.stringify(state.recipes));
+
+  // Check secrets
+  checkSecrets();
+
+  // Cinematic
+  showCinematic(drink);
+
+  renderRecipes();
+  playParticles();
+}
+
+function createRandomDrink() {
+  state.base = ['coffee', 'tea', 'chocolate', 'milk'][Math.floor(Math.random() * 4)];
+  state.ice = Math.random() > 0.5 ? Math.floor(Math.random() * 60) : 0;
+  state.syrups = [];
+  if (Math.random() > 0.5) state.syrups.push(['vanilla', 'caramel', 'hazelnut'][Math.floor(Math.random() * 3)]);
+  state.topping = ['cream', 'chocolate', 'caramel', 'none'][Math.floor(Math.random() * 4)];
+  state.temp = Math.random() > 0.5 ? 'hot' : 'cold';
+  state.sweetness = Math.floor(Math.random() * 100);
+
+  // Update UI
+  updatePreview();
+  createDrink();
+}
+
+function surpriseMe() {
+  show('builder');
+  createRandomDrink();
+}
+
+function checkSecrets() {
+  const syrups = state.syrups.join('-');
+  const temp = state.temp;
+
+  if (state.syrups.includes('vanilla') && state.syrups.includes('caramel') && temp === 'cold' && !state.secrets['vanilla-caramel-oat']) {
+    state.secrets['vanilla-caramel-oat'] = true;
+    unlockSecret('vanilla-caramel-oat');
+  }
+  if (state.base === 'chocolate' && state.syrups.includes('hazelnut') && state.topping === 'cream' && !state.secrets['chocolate-hazelnut-cream']) {
+    state.secrets['chocolate-hazelnut-cream'] = true;
+    unlockSecret('chocolate-hazelnut-cream');
+  }
+}
+
+function unlockSecret(id) {
+  addAchievement('🔓 ' + id.split('-').join(' '));
+  showToast('🎉 رازی باز شد!');
+  renderSecrets();
+}
+
+function renderSecrets() {
+  const grid = document.getElementById('secrets-grid');
+  grid.innerHTML = SECRETS.map(s => `
+    <div class="recipe-card" style="opacity:${state.secrets[s.id] ? 1 : 0.3}">
+      <div class="recipe-title">${s.name}</div>
+      <div class="recipe-content">${s.req}</div>
+      ${state.secrets[s.id] ? '<div style="margin-top:0.5rem;color:var(--gold);font-weight:700;">✅ باز شده</div>' : '<div style="margin-top:0.5rem;color:rgba(255,255,255,0.5);font-weight:700;">🔒 مخفی</div>'}
+    </div>
+  `).join('');
+}
+
+// ACHIEVEMENTS
+function addAchievement(name) {
+  if (!state.achievements.includes(name)) {
+    state.achievements.push(name);
+    localStorage.setItem('achievements', JSON.stringify(state.achievements));
+    renderAchievements();
+  }
+}
+
+function renderAchievements() {
+  const achs = ['☕ First Coffee', '🎨 Color Master', '🎲 Luck Seeker', '🔐 Secret Hunter'];
+  const html = achs.map((a, i) => `
+    <div class="achievement ${state.achievements.includes(a) ? 'unlocked' : ''}">
+      <div class="ach-icon">${a.split(' ')[0]}</div>
+      <div class="ach-name">${a.split(' ')[1]}</div>
+    </div>
+  `).join('');
+  
+  const home = document.getElementById('home-achievements');
+  const other = document.querySelectorAll('.achievements');
+  if (home) home.innerHTML = html;
+}
+
+// GAME
+let gameStarted = false;
+let gamePour = 0;
+let gameScore = 0;
+
+function startGame() {
+  gameStarted = true;
+  gamePour = 0;
+  gameScore = 0;
+  document.getElementById('game-score').textContent = '0';
+  document.getElementById('game-instruction').textContent = '🥛 شیر بریز (30-70%)';
+  document.getElementById('game-liquid').style.height = '0%';
+}
+
+function startPour() {
+  if (!gameStarted) return;
+  const interval = setInterval(() => {
+    if (!gameStarted) {
+      clearInterval(interval);
+      return;
+    }
+    gamePour += 2;
+    document.getElementById('game-liquid').style.height = gamePour + '%';
+    if (gamePour >= 100) {
+      gameStarted = false;
+      clearInterval(interval);
+      finishGame();
+    }
+  }, 50);
+}
+
+function stopPour() {
+  if (!gameStarted) return;
+  gameStarted = false;
+  finishGame();
+}
+
+function finishGame() {
+  if (gamePour >= 30 && gamePour <= 70) {
+    gameScore += 100;
+    document.getElementById('game-score').textContent = gameScore;
+    document.getElementById('game-instruction').textContent = '✅ عالی! +100 امتیاز';
+    addAchievement('🎮 Game Master');
+  } else {
+    document.getElementById('game-instruction').textContent = '❌ خیلی ' + (gamePour < 30 ? 'کم' : 'زیاد') + ' بود!';
+  }
+  setTimeout(() => {
+    gameStarted = false;
+    gamePour = 0;
+    document.getElementById('game-liquid').style.height = '0%';
+    document.getElementById('game-instruction').textContent = 'دوباره!';
+  }, 2000);
+}
+
+// CINEMATIC
+function showCinematic(drink) {
+  const card = document.getElementById('cinematic-card');
+  const fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
+  card.innerHTML = `
+    <h2>${drink.name}</h2>
+    <p style="margin-bottom:2rem;font-size:0.95rem;">${drink.base}</p>
+    <div style="border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);padding:1.5rem;margin:1.5rem 0;">
+      <p style="font-style:italic;font-size:1.05rem;color:var(--gold);">"${fortune}"</p>
+    </div>
+    <button class="btn btn-primary" onclick="closeCinematic()">👌 عالی بود</button>
+  `;
+  document.getElementById('cinematic').classList.add('show');
+
+  // Particles
+  playParticles();
+}
+
+function closeCinematic() {
+  document.getElementById('cinematic').classList.remove('show');
+}
+
+// RECIPES
+function renderRecipes() {
+  const list = document.getElementById('recipes-list');
+  if (!state.recipes.length) {
+    list.innerHTML = '<p style="color:rgba(255,255,255,0.6);text-align:center;">هنوز نوشیدنی ذخیره نشده</p>';
+    return;
+  }
+
+  list.innerHTML = state.recipes.map((r, i) => `
+    <div class="recipe-card">
+      <div class="recipe-title">${r.name}</div>
+      <div class="recipe-content">
+        <div style="margin:0.5rem 0;">🔹 ${r.base}</div>
+        ${r.ice ? '<div style="margin:0.5rem 0;">❄️ ' + r.ice + '% یخ</div>' : ''}
+        ${r.syrups.length ? '<div style="margin:0.5rem 0;">🍯 ' + r.syrups.join(' + ') + '</div>' : ''}
+      </div>
+      <button class="btn btn-secondary" style="margin-top:0.75rem;width:100%" onclick="deleteRecipe(${i})">🗑️ حذف</button>
+    </div>
+  `).join('');
+}
+
+function deleteRecipe(i) {
+  state.recipes.splice(i, 1);
+  localStorage.setItem('recipes', JSON.stringify(state.recipes));
+  renderRecipes();
+}
+
+// PARTICLES
+function playParticles() {
+  for (let i = 0; i < 10; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * window.innerWidth + 'px';
+    p.style.top = window.innerHeight + 'px';
+    p.style.width = (Math.random() * 8 + 4) + 'px';
+    p.style.height = p.style.width;
+    p.style.backgroundColor = ['var(--gold)', '#E8651A', '#FFD700'][Math.floor(Math.random() * 3)];
+    p.style.borderRadius = '50%';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 3000);
+  }
+}
+
+// TOAST
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0D0905;padding:0.75rem 1.5rem;border-radius:100px;font-weight:700;z-index:999;animation:slideIn 0.3s ease;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+// INIT
+updatePreview();
+addAchievement('☕ First Coffee');
+</script>
+</body>
+</html>
